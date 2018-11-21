@@ -32,7 +32,7 @@ class Polygon
         Polygon();
         void calculateNormal();
         void draw();
-        void draw(vector<float> sCoordinates, vector<float> tCoordinates);
+        void draw(int texID, vector<float> sCoordinates, vector<float> tCoordinates);
 };
 
 #endif /* Polygon_hpp */

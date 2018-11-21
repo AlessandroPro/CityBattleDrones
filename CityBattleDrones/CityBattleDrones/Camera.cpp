@@ -8,10 +8,11 @@
 
 #include "Camera.hpp"
 
+
 Camera::Camera():
     azimuth(0),
-    elevation(30),
-    zoomDistance(20),
+    elevation(25),
+    zoomDistance(10),
     clickX(0),
     clickY(0),
     clickAndDrag(false),
@@ -25,10 +26,10 @@ Camera::Camera():
         controlActions[0] = false;
         controlActions[1] = false;
         controlActions[2] = false;
-        updatePosition();
+        update();
     }
 
-void Camera::updatePosition()
+void Camera::update()
 {
     if(controlActions[0]) azimuth += azimuthChangeRate;
     if(controlActions[1]) elevation += elevationChangeRate;
@@ -36,11 +37,11 @@ void Camera::updatePosition()
     
     if(azimuth >= 360)
     {
-        azimuth -= 360;
+        //azimuth -= 360;
     }
     else if(azimuth < 0)
     {
-        azimuth += 360;
+        //azimuth += 360;
     }
     
     if(elevation < minElevation)
@@ -61,14 +62,18 @@ void Camera::updatePosition()
         zoomDistance = maxZoomDistance;
     }
     
+    //cout << azimuth << "\n";
+    
     //change elevation
     position.x = 0;
     position.y = zoomDistance*sin(elevation*DEGTORAD);
     position.z = zoomDistance*cos(elevation*DEGTORAD);
     
     //change azimuth
-    position.x = position.z*sin(azimuth);
-    position.z = position.z*cos(azimuth);
+    position.x = position.z*sin(azimuth*DEGTORAD);
+    position.z = position.z*cos(azimuth*DEGTORAD);
+    
+    position = Vector3D::add(position, focus);
     
     forward = Vector3D::subtract(focus, position);
     forward.normalize();
@@ -87,6 +92,26 @@ void Camera::setElevationChangeRate(float rate)
 void Camera::setZoomChangeRate(float rate)
 {
     zoomChangeRate = rate;
+}
+
+void Camera::setElevation(float angle)
+{
+    elevation = angle;
+}
+
+void Camera::setAzimuth(float angle)
+{
+    azimuth = angle;
+}
+
+void Camera::setZoom(float distance)
+{
+    zoomDistance = distance;
+}
+
+void Camera::changeFocus(Vector3D newFocus)
+{
+    focus = newFocus;
 }
 
 //Used for click and draggin on the screen window to move the camera around the hemisphere

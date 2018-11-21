@@ -40,6 +40,8 @@ private:
     GLfloat scaleFactor;
     int numArms;
     int numPropBlades;
+    float forwardSpeed;
+    float rightSpeed;
     GLfloat tiltAngle;
     Vector3D position;
     Vector3D rotation;
@@ -48,8 +50,9 @@ private:
     PrismMesh cube;
     vector<DroneArm> arms;
     //boolean array to keep track of when a control is actioned:
-    //move up, move down, move forward, move backward, rotate ccw, rotate cw
-    bool controlActions[6];
+    //move up, move down, move forward, move backward,
+    //rotate ccw, rotate cw, move right, move left
+    bool controlActions[8];
     const GLfloat bodyScaleY = 0.65;
     
 public:
@@ -64,10 +67,12 @@ public:
     void changeElevation(GLfloat deltaY);
     void changeDirection(GLfloat deltaAngle);
     void spinPropellers();
-    void move(GLfloat deltaForward);
+    void move(GLfloat deltaForward, GLfloat deltaRight);
     void stabilize();
     void drawCockpit();
     void updateDrone();
+    Vector3D getPosition();
+    float getRotationY();
     void setAction(int actionIndex, bool set);
 };
 

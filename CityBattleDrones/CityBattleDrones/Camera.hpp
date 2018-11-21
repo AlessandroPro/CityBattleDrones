@@ -15,6 +15,10 @@
 #define PI 3.14159265
 #define DEGTORAD (PI / 180.0)
 
+#include <iostream>
+using namespace std;
+
+
 class Camera
 {
     public:
@@ -40,10 +44,14 @@ class Camera
     bool controlActions[3];
     
     Camera();
-    void updatePosition();
+    void update();
     void setAzimuthChangeRate(float rate);
     void setElevationChangeRate(float rate);
     void setZoomChangeRate(float rate);
+    void setElevation(float angle);
+    void setAzimuth(float angle);
+    void setZoom(float distance);
+    void changeFocus(Vector3D newFocus);
     void move(float mouseX, float mouseY);
 };
 

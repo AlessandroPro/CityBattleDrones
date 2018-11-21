@@ -41,8 +41,11 @@ void Polygon::draw()
     glEnd();
 }
 
-void Polygon::draw(vector<float> sCoordinates, vector<float> tCoordinates)
+void Polygon::draw(int texID, vector<float> sCoordinates, vector<float> tCoordinates)
 {
+    glBindTexture(GL_TEXTURE_2D, texID);
+    glEnable(GL_TEXTURE_2D);
+    
     glBegin(GL_POLYGON);
     glNormal3f(normal.x, normal.y, normal.z);
     for(int i = 0; i < verts.size(); i++){
@@ -50,4 +53,6 @@ void Polygon::draw(vector<float> sCoordinates, vector<float> tCoordinates)
         glVertex3f(verts[i].x, verts[i].y, verts[i].z);
     }
     glEnd();
+    
+    glDisable(GL_TEXTURE_2D);
 }

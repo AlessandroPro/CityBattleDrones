@@ -1,5 +1,5 @@
 /*******************************************************************
-           Multi-Part Drone Model Construction and Manipulation
+           City Battle Drones
 ********************************************************************/
 
 #include <stdio.h>
@@ -30,7 +30,7 @@ Vector3D spawnPoint(0.0, 3.0, 5.0);
 // Creates a drone with a scaleFactor of 1.0;
 // with 5 arms and 2 propeller blades per arm;
 // positioned at spawnPoint
-Drone drone(1.0, 5, 2, spawnPoint);
+Drone drone(1.0, 6, 2, spawnPoint);
 PrismMesh prism;
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
@@ -87,7 +87,6 @@ int main(int argc, char **argv)
     glutMouseFunc(mouseButtonHandler);
     glutMotionFunc(mouseMotionHandler);
     glutIdleFunc(display);
-    
 
     // Start event loop, never returns
     glutMainLoop();
@@ -117,8 +116,10 @@ void initOpenGL(int w, int h)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);   // Nicer perspective
     
     //Load textures
-    string tex1 = "plank01.bmp";
-    texFiles.push_back(tex1);
+    texFiles.push_back(string("plank01.bmp"));  //2000
+    texFiles.push_back(string("steel.bmp"));    //2001
+    texFiles.push_back(string("jae2.bmp"));//2002
+    texFiles.push_back(string("redMetal2.bmp"));//2003
     pm = TextureUtils::loadTextures(texFiles);
 }
 
@@ -128,7 +129,8 @@ void initOpenGL(int w, int h)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     
     glViewport(0, 0, (GLsizei)windowWidth, (GLsizei)windowHeight);
     glMatrixMode(GL_PROJECTION);
@@ -138,9 +140,10 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    camera.updatePosition();
+    camera.changeFocus(drone.getPosition());
+    camera.setAzimuth(180 + drone.getRotationY());
+    camera.update();
     gluLookAt(camera.position.x, camera.position.y, camera.position.z, camera.focus.x, camera.focus.y, camera.focus.z, 0, 1, 0);
-    cout << camera.focus.x << ", " << camera.focus.y << ", " << camera.focus.z << "\n";
     //glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
     // Draw the full drone and applies its transformations based on its current
@@ -190,15 +193,21 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
     {
-    case 's':
+    case 'p':
         drone.propsSpinning = !drone.propsSpinning;
         glutTimerFunc(5.0, toggleDronePropellers, 0);
         break;
-    case 'f':
+    case 'w':
         drone.setAction(2, true);
         break;
-    case 'b':
+    case 's':
         drone.setAction(3, true);
+        break;
+    case 'a':
+        drone.setAction(7, true);
+        break;
+    case 'd':
+        drone.setAction(6, true);
         break;
     case 'h':
         printControls();
@@ -211,13 +220,17 @@ void keyboardUp(unsigned char key, int x, int y)
 {
     switch (key)
     {
-        case 'f':
-            //drone.stabilize();
+        case 'w':
             drone.setAction(2, false);
             break;
-        case 'b':
-            //drone.stabilize();
+        case 's':
             drone.setAction(3, false);
+            break;
+        case 'a':
+            drone.setAction(7, false);
+            break;
+        case 'd':
+            drone.setAction(6, false);
             break;
     }
     glutPostRedisplay();

@@ -55,6 +55,19 @@
 		E84F893921A0D6E900FECB69 /* TextureUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextureUtils.cpp; sourceTree = "<group>"; };
 		E84F893A21A0D6E900FECB69 /* TextureUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureUtils.hpp; sourceTree = "<group>"; };
 		E84F893C21A0DD7900FECB69 /* plank01.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = plank01.bmp; sourceTree = "<group>"; };
+		E84F893D21A2620700FECB69 /* steel.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = steel.bmp; sourceTree = "<group>"; };
+		E84F893E21A263AD00FECB69 /* redMetal.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = redMetal.bmp; sourceTree = "<group>"; };
+		E84F894121A2654400FECB69 /* redMetal1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = redMetal1.bmp; sourceTree = "<group>"; };
+		E84F894221A265BF00FECB69 /* redMetal2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = redMetal2.bmp; sourceTree = "<group>"; };
+		E84F894321A3A33500FECB69 /* jae.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jae.bmp; sourceTree = "<group>"; };
+		E84F894421A3ABBB00FECB69 /* jae2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jae2.bmp; sourceTree = "<group>"; };
+		E84F894521A3ADB400FECB69 /* professor.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = professor.bmp; sourceTree = "<group>"; };
+		E84F894621A3AE5600FECB69 /* Zaddy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zaddy.png; sourceTree = "<group>"; };
+		E84F894821A3AECC00FECB69 /* trash.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = trash.bmp; sourceTree = "<group>"; };
+		E84F894921A3AF1D00FECB69 /* Zaddy.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = Zaddy.bmp; sourceTree = "<group>"; };
+		E84F894A21A3AF8700FECB69 /* jon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jon.bmp; sourceTree = "<group>"; };
+		E84F894B21A3B02700FECB69 /* aegon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = aegon.bmp; sourceTree = "<group>"; };
+		E84F894C21A4A65F00FECB69 /* mikhail.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = mikhail.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,7 +120,20 @@
 				E84F893721A0C5C000FECB69 /* Camera.hpp */,
 				E84F893921A0D6E900FECB69 /* TextureUtils.cpp */,
 				E84F893A21A0D6E900FECB69 /* TextureUtils.hpp */,
+				E84F893D21A2620700FECB69 /* steel.bmp */,
 				E84F893C21A0DD7900FECB69 /* plank01.bmp */,
+				E84F893E21A263AD00FECB69 /* redMetal.bmp */,
+				E84F894121A2654400FECB69 /* redMetal1.bmp */,
+				E84F894A21A3AF8700FECB69 /* jon.bmp */,
+				E84F894821A3AECC00FECB69 /* trash.bmp */,
+				E84F894B21A3B02700FECB69 /* aegon.bmp */,
+				E84F894921A3AF1D00FECB69 /* Zaddy.bmp */,
+				E84F894521A3ADB400FECB69 /* professor.bmp */,
+				E84F894C21A4A65F00FECB69 /* mikhail.bmp */,
+				E84F894421A3ABBB00FECB69 /* jae2.bmp */,
+				E84F894221A265BF00FECB69 /* redMetal2.bmp */,
+				E84F894621A3AE5600FECB69 /* Zaddy.png */,
+				E84F894321A3A33500FECB69 /* jae.bmp */,
 				E84F891A219F91AE00FECB69 /* README.txt */,
 			);
 			path = CityBattleDrones;

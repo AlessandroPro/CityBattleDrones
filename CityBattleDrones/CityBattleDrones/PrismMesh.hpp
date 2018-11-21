@@ -38,7 +38,7 @@ public:
     PrismMesh();
     PrismMesh(int numEdges, float height, float rotY, float posX, float posZ, Vector3D scale);
     void draw();
-    void draw(vector<float> sCoordinates, vector<float> tCoordinates);
+    void draw(int quadTexID, vector<float> sQuadCoords, vector<float> tQuadCoords, bool baseTex, int baseTexID);
     void build();
     void changeNumSides(int changeNum);
     void rotateY(float deltaY);

@@ -7,15 +7,17 @@
 
 Drone::Drone():
     scaleFactor(1.0),
-    numArms(3),
+    numArms(6),
     numPropBlades(2),
+    forwardSpeed(0.0),
+    rightSpeed(0),
     tiltAngle(0.0),
     position(Vector3D(0.0, 0.0, 0.0)),
     rotation(Vector3D(0.0, 0.0, 0.0)),
     forward(Vector3D(0.0, 0.0, 1.0)),
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
     cube(PrismMesh()),
-    controlActions{false, false, false, false, false, false},
+    controlActions{false, false, false, false, false, false, false, false},
     propsSpinning(false)
 {
     createArms(3.0, 0.5);
@@ -25,6 +27,8 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& posi
     scaleFactor(scaleFactor),
     numArms(numArms),
     numPropBlades(numPropBlades),
+    forwardSpeed(0.0),
+    rightSpeed(0.0),
     tiltAngle(0.0),
     position(position),
     rotation(Vector3D(0.0, 0.0, 0.0)),
@@ -50,11 +54,11 @@ void Drone::draw()
     // Translates drone to given position
     glTranslatef(position.x, position.y, position.z);
     
-    // Rotates drone along the forward axis in its left/right direction
+    // Rotates drone along the forward axis in its right/left direction
     if(controlActions[4]) glRotatef(tiltAngle, forward.x, forward.y, forward.z);
     else if(controlActions[5]) glRotatef(tiltAngle, -forward.x, -forward.y, -forward.z);
     
-    // Rotates drone along the tilt axis in its forward/backward direction
+    // Rotates drone along the tilt axis in its forward/backward/left/right direction
     glRotatef(tiltAngle, tiltAxis.x, tiltAxis.y, tiltAxis.z);
     
     // Rotates the drone around the up axis to change its direction
@@ -127,20 +131,20 @@ void Drone::spinPropellers()
     
 // Moves the drone in its forward direction by deltaForward, which is the
 // direction the cockpit is facing
-void Drone::move(GLfloat deltaForward)
+// If deltaForward is negative, the drone moves backward
+void Drone::move(GLfloat deltaForward, GLfloat deltaRight)
 {
-    Vector3D velocity(forward.x, forward.y, forward.z);
-    velocity = Vector3D::scalarMul(velocity, deltaForward);
-    position = Vector3D::add(position, velocity);
-    //tilt the drone in the direction of movement
     Vector3D upDir(0.0, 1.0, 0.0);
-    tiltAxis = Vector3D::crossProduct(forward, upDir);
-    if(deltaForward > 0){
-        tiltAngle = -10.0;
-    }
-    else if(deltaForward < 0){
-        tiltAngle = 10.0;
-    }
+    Vector3D right = Vector3D::crossProduct(forward, upDir);
+    right.normalize();
+    
+    Vector3D velocityFB = Vector3D::scalarMul(forward, deltaForward);
+    Vector3D velocityRL = Vector3D::scalarMul(right, deltaRight);
+    
+    Vector3D moveVelocity = Vector3D::add(velocityFB, velocityRL);
+    tiltAxis = Vector3D::crossProduct(moveVelocity, upDir);
+    position = Vector3D::add(position, moveVelocity);
+    tiltAngle = -15.0;
 }
 
 // Resets the drone's tilt to make its body parallel with the ground;
@@ -169,15 +173,35 @@ void Drone::drawCockpit()
     glPopMatrix();
 }
 
+
 void Drone::updateDrone()
 {
+    forwardSpeed = 0;
+    rightSpeed = 0;
+    
     if(controlActions[0]) changeElevation(0.5);
     if(controlActions[1]) changeElevation(-0.5);
-    if(controlActions[2]) move(0.3);
-    if(controlActions[3]) move(-0.3);
-    if(controlActions[4]) changeDirection(5.0);
-    if(controlActions[5]) changeDirection(-5.0);
-    if(!controlActions[2] && !controlActions[3]) stabilize();
+    
+    forwardSpeed = ((controlActions[2]) ? 0.5 : forwardSpeed);
+    forwardSpeed = ((controlActions[3]) ? -0.5 : forwardSpeed);
+    rightSpeed = ((controlActions[6]) ? 0.5 : rightSpeed);
+    rightSpeed = ((controlActions[7]) ? -0.5 : rightSpeed);
+    
+    if(controlActions[4]) changeDirection(2.0);
+    if(controlActions[5]) changeDirection(-2.0);
+    
+    if(forwardSpeed == 0 && rightSpeed == 0) stabilize();
+    else move(forwardSpeed, rightSpeed);
+}
+
+Vector3D Drone::getPosition()
+{
+    return position;
+}
+
+float Drone::getRotationY()
+{
+    return rotation.y;
 }
 
 void Drone::setAction(int actionIndex, bool set)

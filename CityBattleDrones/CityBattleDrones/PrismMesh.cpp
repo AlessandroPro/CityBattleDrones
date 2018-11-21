@@ -9,7 +9,7 @@
 #include "PrismMesh.hpp"
 
 PrismMesh::PrismMesh():
-    numBaseEdges(8),
+    numBaseEdges(4),
     rotationY(0.0),
     initialHeight(1.0), //Initial height is 100meters/unit
     currentHeight(initialHeight),
@@ -33,10 +33,10 @@ PrismMesh::PrismMesh(int numEdges, float height, float rotY, float posX, float p
 void PrismMesh::draw()
 {
     glPushMatrix();
-    //glTranslatef(position.x, 0.0, position.z);
+    glTranslatef(position.x, 0.0, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
-    //glTranslatef(0.0, position.y, 0.0);
+    glTranslatef(0.0, position.y, 0.0);
     baseBottom.draw();
     baseTop.draw();
     for (auto& quad : quads)
@@ -46,18 +46,29 @@ void PrismMesh::draw()
     glPopMatrix();
 }
 
-void PrismMesh::draw(vector<float> sCoordinates,vector<float> tCoordinates)
+void PrismMesh::draw(int quadTexID, vector<float> sQuadCoords, vector<float> tQuadCoords, bool baseTex, int baseTexID)
 {
     glPushMatrix();
     //glTranslatef(position.x, 0.0, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
     //glTranslatef(0.0, position.y, 0.0);
-    baseBottom.draw();
-    baseTop.draw();
+    if(baseTex)
+    {
+        //PUT CODE FOR DETERMINING POSITIONS OF S AND T
+        //vector<float> sBaseCoords =
+        //vector<float> tBaseCoords =
+        //baseBottom.draw(baseTexID, sBaseCoords, tBaseCoords);
+        //baseTop.draw();
+    }
+    else
+    {
+        baseBottom.draw();
+        baseTop.draw();
+    }
     for (auto& quad : quads)
     {
-        quad.draw(sCoordinates, tCoordinates);
+        quad.draw(quadTexID, sQuadCoords, tQuadCoords);
     }
     glPopMatrix();
 }
