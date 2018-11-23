@@ -34,7 +34,7 @@ class Camera
     bool clickAndDrag;
     const float minElevation = 5;
     const float maxElevation = 85;
-    const float minZoomDistance = 3;
+    const float minZoomDistance = 0.001;
     const float maxZoomDistance = 20;
     Vector3D position;
     Vector3D focus;

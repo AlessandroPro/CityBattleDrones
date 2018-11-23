@@ -18,6 +18,8 @@
 		E84F893521A0A92900FECB69 /* Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F893221A0A92900FECB69 /* Polygon.cpp */; };
 		E84F893821A0C5C000FECB69 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F893621A0C5C000FECB69 /* Camera.cpp */; };
 		E84F893B21A0D6E900FECB69 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F893921A0D6E900FECB69 /* TextureUtils.cpp */; };
+		E84F894F21A780F600FECB69 /* Building.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F894D21A780F600FECB69 /* Building.cpp */; };
+		E84F895121A781AF00FECB69 /* Spline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895021A781AF00FECB69 /* Spline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +70,10 @@
 		E84F894A21A3AF8700FECB69 /* jon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jon.bmp; sourceTree = "<group>"; };
 		E84F894B21A3B02700FECB69 /* aegon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = aegon.bmp; sourceTree = "<group>"; };
 		E84F894C21A4A65F00FECB69 /* mikhail.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = mikhail.bmp; sourceTree = "<group>"; };
+		E84F894D21A780F600FECB69 /* Building.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Building.cpp; sourceTree = "<group>"; };
+		E84F894E21A780F600FECB69 /* Building.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Building.hpp; sourceTree = "<group>"; };
+		E84F895021A781AF00FECB69 /* Spline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Spline.cpp; sourceTree = "<group>"; };
+		E84F895221A7851600FECB69 /* CityMetaData.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CityMetaData.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +126,10 @@
 				E84F893721A0C5C000FECB69 /* Camera.hpp */,
 				E84F893921A0D6E900FECB69 /* TextureUtils.cpp */,
 				E84F893A21A0D6E900FECB69 /* TextureUtils.hpp */,
+				E84F895021A781AF00FECB69 /* Spline.cpp */,
+				E84F894E21A780F600FECB69 /* Building.hpp */,
+				E84F894D21A780F600FECB69 /* Building.cpp */,
+				E84F895221A7851600FECB69 /* CityMetaData.txt */,
 				E84F893D21A2620700FECB69 /* steel.bmp */,
 				E84F893C21A0DD7900FECB69 /* plank01.bmp */,
 				E84F893E21A263AD00FECB69 /* redMetal.bmp */,
@@ -207,6 +217,8 @@
 				E84F8924219F91AF00FECB69 /* main.cpp in Sources */,
 				E84F893521A0A92900FECB69 /* Polygon.cpp in Sources */,
 				E84F8925219F91AF00FECB69 /* Propeller.cpp in Sources */,
+				E84F895121A781AF00FECB69 /* Spline.cpp in Sources */,
+				E84F894F21A780F600FECB69 /* Building.cpp in Sources */,
 				E84F8922219F91AF00FECB69 /* Drone.cpp in Sources */,
 				E84F893821A0C5C000FECB69 /* Camera.cpp in Sources */,
 				E84F8921219F91AF00FECB69 /* DroneArm.cpp in Sources */,

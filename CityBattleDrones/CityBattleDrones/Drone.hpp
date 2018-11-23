@@ -54,6 +54,7 @@ private:
     //rotate ccw, rotate cw, move right, move left
     bool controlActions[8];
     const GLfloat bodyScaleY = 0.65;
+    const float deltaMove = 0.1;
     
 public:
     

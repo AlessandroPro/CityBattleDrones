@@ -129,9 +129,11 @@ void Drone::spinPropellers()
     }
 }
     
-// Moves the drone in its forward direction by deltaForward, which is the
-// direction the cockpit is facing
-// If deltaForward is negative, the drone moves backward
+// Moves the drone in its forward direction by deltaForward, and
+// in its right direction by deltaRight
+// If deltaForward/deltaRIght are negative, the drone moves backward/left
+// A combination of these two paramaters allows the drone to move in
+// 8 possible directionsu
 void Drone::move(GLfloat deltaForward, GLfloat deltaRight)
 {
     Vector3D upDir(0.0, 1.0, 0.0);
@@ -179,13 +181,13 @@ void Drone::updateDrone()
     forwardSpeed = 0;
     rightSpeed = 0;
     
-    if(controlActions[0]) changeElevation(0.5);
-    if(controlActions[1]) changeElevation(-0.5);
+    if(controlActions[0]) changeElevation(deltaMove);
+    if(controlActions[1]) changeElevation(-deltaMove);
     
-    forwardSpeed = ((controlActions[2]) ? 0.5 : forwardSpeed);
-    forwardSpeed = ((controlActions[3]) ? -0.5 : forwardSpeed);
-    rightSpeed = ((controlActions[6]) ? 0.5 : rightSpeed);
-    rightSpeed = ((controlActions[7]) ? -0.5 : rightSpeed);
+    forwardSpeed = ((controlActions[2]) ? deltaMove : forwardSpeed);
+    forwardSpeed = ((controlActions[3]) ? -deltaMove : forwardSpeed);
+    rightSpeed = ((controlActions[6]) ? deltaMove : rightSpeed);
+    rightSpeed = ((controlActions[7]) ? -deltaMove : rightSpeed);
     
     if(controlActions[4]) changeDirection(2.0);
     if(controlActions[5]) changeDirection(-2.0);

@@ -16,7 +16,10 @@
 #include "TextureUtils.hpp"
 #include "Drone.hpp"
 #include "Camera.hpp"
+#include "Building.hpp"
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -25,15 +28,20 @@ const int vHeight = 500;    // Viewport height in pixels
 int windowWidth;
 int windowHeight;
 
+const int groundLength = 36;         // Default ground length 100 meters/unit
+const int groundWidth = 36;          // Default ground height 100 meters/unit
+
 //Initialize a drone object
 Vector3D spawnPoint(0.0, 3.0, 5.0);
 // Creates a drone with a scaleFactor of 1.0;
 // with 5 arms and 2 propeller blades per arm;
 // positioned at spawnPoint
-Drone drone(1.0, 6, 2, spawnPoint);
+Drone drone(0.002, 6, 2, spawnPoint);
 PrismMesh prism;
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
+static vector<Building*> buildings;                //array of buildings
+static string CityMetaDataFile = "CityMetaData.txt";
 
 //Textures
 static std::vector<string> texFiles; //array of texture filenames
@@ -51,6 +59,12 @@ static GLfloat block_mat_specular[] = { 0.4F, 0.2F, 0.4F, 1.0F };
 static GLfloat block_mat_diffuse[] = { 0.6F, 0.9F, 0.9F, 0.0F };
 static GLfloat block_mat_shininess[] = { 0.8F };
 
+// Ground material properties
+static GLfloat ground_ambient[] = { 0.3F, 0.2F, 0.1F, 1.0F };
+static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 0.1F };
+static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.4F, 1.0F };
+static GLfloat ground_shininess[] = { 0.1F };
+
 // Prototypes for functions in this module
 void initOpenGL(int w, int h);
 void display(void);
@@ -64,6 +78,7 @@ void toggleDronePropellers(int val);
 void mouseButtonHandler(int button, int state, int xMouse, int yMouse);
 void mouseMotionHandler(int xMouse, int yMouse);
 void printControls();
+void loadCity(string filename);
 
 int main(int argc, char **argv)
 {
@@ -72,7 +87,7 @@ int main(int argc, char **argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(vWidth, vHeight);
     glutInitWindowPosition(200, 30);
-    glutCreateWindow("Assignment 1 - Drone Interaction");
+    glutCreateWindow("Assignment 3 - City Battle Drones");
 
     // Initialize GL
     initOpenGL(vWidth, vHeight);
@@ -135,21 +150,35 @@ void display(void)
     glViewport(0, 0, (GLsizei)windowWidth, (GLsizei)windowHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0, (GLdouble)windowWidth / windowHeight, 0.2, 40.0);
+    gluPerspective(60.0, (GLdouble)windowWidth / windowHeight, 0.0005, 400.0);
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
+    drone.updateDrone();
     camera.changeFocus(drone.getPosition());
     camera.setAzimuth(180 + drone.getRotationY());
     camera.update();
-    gluLookAt(camera.position.x, camera.position.y, camera.position.z, camera.focus.x, camera.focus.y, camera.focus.z, 0, 1, 0);
-    //glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
-    // Draw the full drone and applies its transformations based on its current
-    // rotation, position, etc.
-    drone.updateDrone();
+    gluLookAt(camera.position.x, camera.position.y, camera.position.z, camera.focus.x, camera.focus.y, camera.focus.z, 0, 1, 0);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+    
     drone.draw();
+    
+    // Set material properties of the ground
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ground_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, ground_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, ground_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
+    
+    //Draw ground quad
+    glBegin(GL_QUADS);
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(-groundLength/2, 0.0, -groundWidth/2);
+    glVertex3f(-groundLength/2, 0.0, groundWidth/2);
+    glVertex3f(groundLength/2, 0.0, groundWidth/2);
+    glVertex3f(groundLength/2, 0.0, -groundWidth/2);
+    glEnd();
     
     // Set ground block material properties
     glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
@@ -157,23 +186,29 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_DIFFUSE, block_mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
     
-    // Draw ground Block1
-    glPushMatrix();
-    glTranslatef(1.0, -2.5, 1.0);
-    glRotatef(45.0, 0.0, 1.0, 0.0);
-    glScalef(3.0, 5.0, 1.0);
-    glutSolidCube(1.0);
-    glPopMatrix();
+    for(int i = 0; i < buildings.size(); i++)
+    {
+        buildings[i]->draw();
+    }
     
-    // Draw ground Block2
-    glPushMatrix();
-    glTranslatef(-4.0, -1.0, 4.0);
-    glRotatef(30.0, 0.0, 1.0, 0.0);
-    glScalef(2.0, 2.0, 3.0);
-    glutSolidCube(1.0);
-    glPopMatrix();
-    
-    prism.draw();
+//    
+//    // Draw ground Block1
+//    glPushMatrix();
+//    glTranslatef(1.0, -2.5, 1.0);
+//    glRotatef(45.0, 0.0, 1.0, 0.0);
+//    glScalef(3.0, 5.0, 1.0);
+//    glutSolidCube(1.0);
+//    glPopMatrix();
+//    
+//    // Draw ground Block2
+//    glPushMatrix();
+//    glTranslatef(-4.0, -1.0, 4.0);
+//    glRotatef(30.0, 0.0, 1.0, 0.0);
+//    glScalef(2.0, 2.0, 3.0);
+//    glutSolidCube(1.0);
+//    glPopMatrix();
+//    
+//    prism.draw();
     
     glutSwapBuffers();   // Double buffering, swap buffers
 }
@@ -193,25 +228,37 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
     {
-    case 'p':
-        drone.propsSpinning = !drone.propsSpinning;
-        glutTimerFunc(5.0, toggleDronePropellers, 0);
-        break;
-    case 'w':
-        drone.setAction(2, true);
-        break;
-    case 's':
-        drone.setAction(3, true);
-        break;
-    case 'a':
-        drone.setAction(7, true);
-        break;
-    case 'd':
-        drone.setAction(6, true);
-        break;
-    case 'h':
-        printControls();
-        break;
+        case 'p':
+            drone.propsSpinning = !drone.propsSpinning;
+            glutTimerFunc(5.0, toggleDronePropellers, 0);
+            break;
+        case 'w':
+            drone.setAction(2, true);
+            break;
+        case 's':
+            drone.setAction(3, true);
+            break;
+        case 'a':
+            drone.setAction(7, true);
+            break;
+        case 'd':
+            drone.setAction(6, true);
+            break;
+        case 'h':
+            printControls();
+            break;
+        case 'i':
+        {
+            camera.setZoomChangeRate(0.01);
+            camera.controlActions[2] = true;
+            break;
+        }
+        case 'o':
+        {
+            camera.setZoomChangeRate(-0.01);
+            camera.controlActions[2] = true;
+            break;
+        }
     }
     glutPostRedisplay();   // Trigger a window redisplay
 }
@@ -231,6 +278,17 @@ void keyboardUp(unsigned char key, int x, int y)
             break;
         case 'd':
             drone.setAction(6, false);
+            break;
+        case 'v':
+        {
+            loadCity(CityMetaDataFile);
+            break;
+        }
+        case 'i':
+            camera.controlActions[2] = false;
+            break;
+        case 'o':
+            camera.controlActions[2] = false;
             break;
     }
     glutPostRedisplay();
@@ -279,7 +337,6 @@ void functionKeysUp(int key, int x, int y)
         drone.setAction(5, false);
     }
     glutPostRedisplay();   // Trigger a window redisplay
-    
 }
 
 
@@ -355,6 +412,48 @@ void printControls()
     controls += "Print Controls:            h Key\n";
     std::cout << controls;
 };
+
+void loadCity(string filename)
+{
+    string line;
+    string metaData;
+    vector<Building*> loadedBuildings;
+    ifstream myfile (filename);
+    if (myfile.is_open())
+    {
+        while ( getline (myfile,line) )
+        {
+            if(!line.compare("---------"))
+            {
+                if(loadedBuildings.size() > 0)
+                {
+                    loadedBuildings.at(loadedBuildings.size() - 1)->processMetaData(metaData);
+                }
+                Building* bd = new Building();
+                loadedBuildings.push_back(bd);
+                metaData = "";
+            }
+            else if(!line.compare("END_LIST"))
+            {
+                if(loadedBuildings.size() > 0)
+                {
+                    loadedBuildings.at(loadedBuildings.size() - 1)->processMetaData(metaData);
+                }
+            }
+            else
+            {
+                metaData += line + "\n";
+            }
+        }
+        for (auto& bld : loadedBuildings)
+        {
+            buildings.push_back(bld);
+        }
+        glutPostRedisplay();
+        myfile.close();
+    }
+    else cout << "Unable to open file";
+}
 
 
 
