@@ -15,6 +15,7 @@
 #include <GL/glut.h>
 #endif
 #include "Vector3D.hpp"
+#include "Vector2D.hpp"
 #include "Propeller.hpp"
 #include "PrismMesh.hpp"
 #include <vector>

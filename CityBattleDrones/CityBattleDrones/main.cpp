@@ -30,6 +30,7 @@ int windowHeight;
 
 const int groundLength = 36;         // Default ground length 100 meters/unit
 const int groundWidth = 36;          // Default ground height 100 meters/unit
+const int worldSize = 60;            // Size of the world, used for the skybox
 
 //Initialize a drone object
 Vector3D spawnPoint(0.0, 3.0, 5.0);
@@ -42,16 +43,18 @@ static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
 static vector<Building*> buildings;                //array of buildings
 static string CityMetaDataFile = "CityMetaData.txt";
+static Polygon ground;
+static PrismMesh skybox;
 
 //Textures
 static std::vector<string> texFiles; //array of texture filenames
 static std::vector<RGBpixmap*> pm;  //array of pointers to pixelmaps for each texture file
 
 // Light properties
-static GLfloat light_position0[] = { -6.0F, 12.0F, 0.0F, 1.0F };
+static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
 static GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 static GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-static GLfloat light_ambient[] = { 0.2F, 0.2F, 0.2F, 1.0F };
+static GLfloat light_ambient[] = { 0.9F, 0.9F, 0.9F, 1.0F };
 
 // Material properties for the ground blocks
 static GLfloat block_mat_ambient[] = { 0.3F, 0.2F, 0.05F, 1.0F };
@@ -64,6 +67,36 @@ static GLfloat ground_ambient[] = { 0.3F, 0.2F, 0.1F, 1.0F };
 static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 0.1F };
 static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.4F, 1.0F };
 static GLfloat ground_shininess[] = { 0.1F };
+
+// Skybox texture grid s&t coordinates (5x4 grid lines)
+// Example: st12 represents the intersection of vertical line 1 and horizontal line 2
+// in a zero-indexed grid
+static Vector2D st10 = Vector2D(0.25, 0);
+static Vector2D st20 = Vector2D(0.5, 0);
+
+static Vector2D st01 = Vector2D(0, 0.334);
+static Vector2D st11 = Vector2D(0.25, 0.334);
+static Vector2D st21 = Vector2D(0.5, 0.334);
+static Vector2D st31 = Vector2D(0.75, 0.334);
+static Vector2D st41 = Vector2D(1, 0.334);
+
+static Vector2D st02 = Vector2D(0, 0.666);
+static Vector2D st12 = Vector2D(0.25, 0.666);
+static Vector2D st22 = Vector2D(0.5, 0.666);
+static Vector2D st32 = Vector2D(0.75, 0.666);
+static Vector2D st42 = Vector2D(1, 0.666);
+
+static Vector2D st13 = Vector2D(0.25, 1);
+static Vector2D st23 = Vector2D(0.5, 1);
+
+// Skybox texture coordinates
+static vector<Vector2D> stSkyTopCoords = {st12, st13, st23, st22};
+static vector<Vector2D> stSkyBottomCoords = {st21, st20, st10, st11};
+static vector<vector<Vector2D>> stSkySideCoords = {{st11, st12, st22, st21},
+                                                   {st01, st02, st12, st11},
+                                                   {st31, st32, st42, st41},
+                                                   {st21, st22, st32, st31}};
+
 
 // Prototypes for functions in this module
 void initOpenGL(int w, int h);
@@ -130,12 +163,25 @@ void initOpenGL(int w, int h)
     glEnable(GL_NORMALIZE);    // Renormalize normal vectors 
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);   // Nicer perspective
     
+    
     //Load textures
-    texFiles.push_back(string("plank01.bmp"));  //2000
-    texFiles.push_back(string("steel.bmp"));    //2001
-    texFiles.push_back(string("jae2.bmp"));//2002
-    texFiles.push_back(string("redMetal2.bmp"));//2003
+    texFiles.push_back(string("plank01.bmp"));      //2000
+    texFiles.push_back(string("steel.bmp"));        //2001
+    texFiles.push_back(string("jae2.bmp"));         //2002
+    texFiles.push_back(string("redMetal2.bmp"));    //2003
+    texFiles.push_back(string("floor1.bmp"));       //2004
+    texFiles.push_back(string("skybox1.bmp"));      //2005
+    texFiles.push_back(string("cityGround1.bmp"));  //2006
+    
     pm = TextureUtils::loadTextures(texFiles);
+    
+    skybox.changeScaleFactors(Vector3D(worldSize, worldSize, worldSize));
+    
+    ground.verts.push_back(Vector3D(groundLength/2, 0.0, -groundWidth/2));
+    ground.verts.push_back(Vector3D(groundLength/2, 0.0, groundWidth/2));
+    ground.verts.push_back(Vector3D(-groundLength/2, 0.0, groundWidth/2));
+    ground.verts.push_back(Vector3D(-groundLength/2, 0.0, -groundWidth/2));
+    ground.calculateNormal();
 }
 
 
@@ -144,8 +190,9 @@ void initOpenGL(int w, int h)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
     
     glViewport(0, 0, (GLsizei)windowWidth, (GLsizei)windowHeight);
     glMatrixMode(GL_PROJECTION);
@@ -172,13 +219,7 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
     
     //Draw ground quad
-    glBegin(GL_QUADS);
-    glNormal3f(0.0, 1.0, 0.0);
-    glVertex3f(-groundLength/2, 0.0, -groundWidth/2);
-    glVertex3f(-groundLength/2, 0.0, groundWidth/2);
-    glVertex3f(groundLength/2, 0.0, groundWidth/2);
-    glVertex3f(groundLength/2, 0.0, -groundWidth/2);
-    glEnd();
+    ground.draw(2006, stCoordinates);
     
     // Set ground block material properties
     glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
@@ -186,10 +227,17 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_DIFFUSE, block_mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
     
+    
     for(int i = 0; i < buildings.size(); i++)
     {
-        buildings[i]->draw();
+        buildings[i]->draw(2004, stCoordinates, false, 0);
     }
+    
+    //skybox
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    skybox.draw(2005, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
+
+
     
 //    
 //    // Draw ground Block1

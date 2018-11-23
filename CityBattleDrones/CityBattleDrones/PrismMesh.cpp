@@ -30,13 +30,14 @@ PrismMesh::PrismMesh(int numEdges, float height, float rotY, float posX, float p
         build();
     }
 
+// Draw the prism without any textures
 void PrismMesh::draw()
 {
     glPushMatrix();
     glTranslatef(position.x, 0.0, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
-    glTranslatef(0.0, position.y, 0.0);
+    //glTranslatef(0.0, position.y, 0.0);
     baseBottom.draw();
     baseTop.draw();
     for (auto& quad : quads)
@@ -46,13 +47,16 @@ void PrismMesh::draw()
     glPopMatrix();
 }
 
-void PrismMesh::draw(int quadTexID, vector<float> sQuadCoords, vector<float> tQuadCoords, bool baseTex, int baseTexID)
+// Draw the prism with the same texture for all of its sides and a different texture for base top and bottom
+// quadTexID - the texture for each prism side quad, which is mapped based on sQuadCoords and tQuadCoords
+// baseTexID - the texture for the base top and bottom, which is only applied if baseTex is set to True
+void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex, int baseTexID)
 {
     glPushMatrix();
-    //glTranslatef(position.x, 0.0, position.z);
+    glTranslatef(position.x, 0.0, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
-    //glTranslatef(0.0, position.y, 0.0);
+    glTranslatef(0.0, position.y, 0.0);
     if(baseTex)
     {
         //PUT CODE FOR DETERMINING POSITIONS OF S AND T
@@ -68,7 +72,29 @@ void PrismMesh::draw(int quadTexID, vector<float> sQuadCoords, vector<float> tQu
     }
     for (auto& quad : quads)
     {
-        quad.draw(quadTexID, sQuadCoords, tQuadCoords);
+        quad.draw(quadTexID, stQuadCoords);
+    }
+    glPopMatrix();
+}
+
+// Draw the prism based on one texture, with each face of the prism mapped to a unique location of the texture
+// Each prism side quad is mapped differently based on their respective st coords in stSideCoords
+// The texture for the top of the prism is mapped based on the st coords in stTopCoords
+// The texture for the Tottom of the prism is mapped based on the st coords in stBottomCoords
+void PrismMesh::draw(int texID, vector<vector<Vector2D>> stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords)
+{
+    glPushMatrix();
+    glTranslatef(position.x, 0, position.z);
+    glRotatef(rotationY, 0.0, 1.0, 0.0);
+    glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
+    //glTranslatef(0.0, position.y, 0.0);
+    
+    baseBottom.draw(texID, stBottomCoords);
+    baseTop.draw(texID, stTopCoords);
+
+    for (int i = 0; i < quads.size(); i++)
+    {
+        quads[i].draw(texID, stSideCoords[i]);
     }
     glPopMatrix();
 }

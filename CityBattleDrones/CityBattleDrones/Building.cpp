@@ -348,6 +348,7 @@ string Building::getMetaData()
 void Building::processMetaData(string md)
 {
     istringstream iss(md);
+    floorHeight = 0.4;
     
     int i = 0;
     for (string line; getline(iss, line);)
@@ -356,7 +357,7 @@ void Building::processMetaData(string md)
         if(i == 0) s >> numBaseEdges;
         else if(i == 1) s >> initialHeight;
         else if(i == 2) s >> currentHeight;
-        else if(i == 3) s >> floorHeight;
+        //else if(i == 3) s >> floorHeight;
         else if(i == 4) s >> rotationY;
         else if(i >= 5 && i <= 8)
         {

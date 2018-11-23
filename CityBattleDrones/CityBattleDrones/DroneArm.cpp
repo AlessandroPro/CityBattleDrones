@@ -34,22 +34,21 @@ void DroneArm::draw(){
     glMaterialfv(GL_FRONT, GL_DIFFUSE, arm_mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SHININESS, arm_mat_shininess);
     
-    vector<float> sCoordinates = {0, 0, 1, 1};
-    vector<float> tCoordinates = {0, 1, 1, 0};
+    vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
     
     //draws arm
     glPushMatrix();
     glTranslatef(armLength/2, 0.0, 0.0);
     glScalef(armLength, armWidth, armWidth);
     glRotatef(90, 0, 0, 1);
-    cube.draw(2003, sCoordinates, tCoordinates, false, 0);
+    cube.draw(2003, stCoordinates, false, 0);
     glPopMatrix();
         
     //draws propeller base
     glPushMatrix();
     glTranslatef(armLength, 0.0, 0.0);
     glScalef(propBaseRadius*2, propBaseRadius*2*propBaseScaleY, propBaseRadius*2);
-    cube.draw(2003, sCoordinates, tCoordinates, false, 0);
+    cube.draw(2003, stCoordinates, false, 0);
     glPopMatrix();
     
     //Draws the propeller

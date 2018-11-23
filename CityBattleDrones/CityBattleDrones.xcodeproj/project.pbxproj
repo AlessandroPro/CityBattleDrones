@@ -20,6 +20,7 @@
 		E84F893B21A0D6E900FECB69 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F893921A0D6E900FECB69 /* TextureUtils.cpp */; };
 		E84F894F21A780F600FECB69 /* Building.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F894D21A780F600FECB69 /* Building.cpp */; };
 		E84F895121A781AF00FECB69 /* Spline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895021A781AF00FECB69 /* Spline.cpp */; };
+		E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895421A8898000FECB69 /* Vector2D.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,9 +65,7 @@
 		E84F894321A3A33500FECB69 /* jae.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jae.bmp; sourceTree = "<group>"; };
 		E84F894421A3ABBB00FECB69 /* jae2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jae2.bmp; sourceTree = "<group>"; };
 		E84F894521A3ADB400FECB69 /* professor.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = professor.bmp; sourceTree = "<group>"; };
-		E84F894621A3AE5600FECB69 /* Zaddy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zaddy.png; sourceTree = "<group>"; };
 		E84F894821A3AECC00FECB69 /* trash.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = trash.bmp; sourceTree = "<group>"; };
-		E84F894921A3AF1D00FECB69 /* Zaddy.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = Zaddy.bmp; sourceTree = "<group>"; };
 		E84F894A21A3AF8700FECB69 /* jon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = jon.bmp; sourceTree = "<group>"; };
 		E84F894B21A3B02700FECB69 /* aegon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = aegon.bmp; sourceTree = "<group>"; };
 		E84F894C21A4A65F00FECB69 /* mikhail.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = mikhail.bmp; sourceTree = "<group>"; };
@@ -74,6 +73,11 @@
 		E84F894E21A780F600FECB69 /* Building.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Building.hpp; sourceTree = "<group>"; };
 		E84F895021A781AF00FECB69 /* Spline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Spline.cpp; sourceTree = "<group>"; };
 		E84F895221A7851600FECB69 /* CityMetaData.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CityMetaData.txt; sourceTree = "<group>"; };
+		E84F895321A87C7C00FECB69 /* floor1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floor1.bmp; sourceTree = "<group>"; };
+		E84F895421A8898000FECB69 /* Vector2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vector2D.cpp; sourceTree = "<group>"; };
+		E84F895521A8898000FECB69 /* Vector2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vector2D.hpp; sourceTree = "<group>"; };
+		E84F895721A89FD700FECB69 /* skybox1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox1.bmp; sourceTree = "<group>"; };
+		E84F895821A8A87A00FECB69 /* cityGround1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = cityGround1.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +122,8 @@
 				E84F891D219F91AF00FECB69 /* Propeller.hpp */,
 				E84F892D21A09FC300FECB69 /* Vector3D.cpp */,
 				E84F892E21A09FC300FECB69 /* Vector3D.hpp */,
+				E84F895421A8898000FECB69 /* Vector2D.cpp */,
+				E84F895521A8898000FECB69 /* Vector2D.hpp */,
 				E84F893221A0A92900FECB69 /* Polygon.cpp */,
 				E84F893121A0A92900FECB69 /* Polygon.hpp */,
 				E84F893021A0A92900FECB69 /* PrismMesh.cpp */,
@@ -131,18 +137,19 @@
 				E84F894D21A780F600FECB69 /* Building.cpp */,
 				E84F895221A7851600FECB69 /* CityMetaData.txt */,
 				E84F893D21A2620700FECB69 /* steel.bmp */,
+				E84F895821A8A87A00FECB69 /* cityGround1.bmp */,
 				E84F893C21A0DD7900FECB69 /* plank01.bmp */,
+				E84F895721A89FD700FECB69 /* skybox1.bmp */,
 				E84F893E21A263AD00FECB69 /* redMetal.bmp */,
 				E84F894121A2654400FECB69 /* redMetal1.bmp */,
 				E84F894A21A3AF8700FECB69 /* jon.bmp */,
 				E84F894821A3AECC00FECB69 /* trash.bmp */,
 				E84F894B21A3B02700FECB69 /* aegon.bmp */,
-				E84F894921A3AF1D00FECB69 /* Zaddy.bmp */,
 				E84F894521A3ADB400FECB69 /* professor.bmp */,
 				E84F894C21A4A65F00FECB69 /* mikhail.bmp */,
 				E84F894421A3ABBB00FECB69 /* jae2.bmp */,
 				E84F894221A265BF00FECB69 /* redMetal2.bmp */,
-				E84F894621A3AE5600FECB69 /* Zaddy.png */,
+				E84F895321A87C7C00FECB69 /* floor1.bmp */,
 				E84F894321A3A33500FECB69 /* jae.bmp */,
 				E84F891A219F91AE00FECB69 /* README.txt */,
 			);
@@ -216,6 +223,7 @@
 			files = (
 				E84F8924219F91AF00FECB69 /* main.cpp in Sources */,
 				E84F893521A0A92900FECB69 /* Polygon.cpp in Sources */,
+				E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */,
 				E84F8925219F91AF00FECB69 /* Propeller.cpp in Sources */,
 				E84F895121A781AF00FECB69 /* Spline.cpp in Sources */,
 				E84F894F21A780F600FECB69 /* Building.cpp in Sources */,

@@ -9,6 +9,7 @@
 #ifndef Polygon_hpp
 #define Polygon_hpp
 
+#include "Vector2D.hpp"
 #include "Vector3D.hpp"
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -32,7 +33,7 @@ class Polygon
         Polygon();
         void calculateNormal();
         void draw();
-        void draw(int texID, vector<float> sCoordinates, vector<float> tCoordinates);
+        void draw(int texID, vector<Vector2D> stCoordinates);
 };
 
 #endif /* Polygon_hpp */

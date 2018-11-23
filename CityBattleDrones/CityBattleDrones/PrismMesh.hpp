@@ -10,6 +10,7 @@
 #define PrismMesh_hpp
 
 #include "Polygon.hpp"
+#include "Vector2D.hpp"
 #include <vector>
 #include <iostream>
 #define PI 3.14159265
@@ -38,7 +39,8 @@ public:
     PrismMesh();
     PrismMesh(int numEdges, float height, float rotY, float posX, float posZ, Vector3D scale);
     void draw();
-    void draw(int quadTexID, vector<float> sQuadCoords, vector<float> tQuadCoords, bool baseTex, int baseTexID);
+    void draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex, int baseTexID);
+    void draw(int textID, vector<vector<Vector2D>> stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords);
     void build();
     void changeNumSides(int changeNum);
     void rotateY(float deltaY);
