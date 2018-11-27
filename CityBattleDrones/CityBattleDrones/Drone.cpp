@@ -18,7 +18,9 @@ Drone::Drone():
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
     cube(PrismMesh()),
     controlActions{false, false, false, false, false, false, false, false},
-    propsSpinning(false)
+    propsSpinning(false),
+    isDestroyed(false),
+    timeDestroyed(0)
 {
     createArms(3.0, 0.5);
 }
@@ -36,7 +38,9 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& posi
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
     cube(PrismMesh()),
     controlActions{false, false, false, false, false, false},
-    propsSpinning(false)
+    propsSpinning(false),
+    isDestroyed(false),
+    timeDestroyed(0)
 {
     createArms(3.0, 0.5);
 }
@@ -90,6 +94,22 @@ void Drone::drawArms()
         glPushMatrix();
         // Rotates the arm to it's designated spot around the drone's central up axis
         glRotatef((360/numArms)*i, 0.0, 1.0, 0.0);
+        if(isDestroyed)
+        {
+            float speed = 15;
+            float timeSinceDestroyed = glutGet(GLUT_ELAPSED_TIME) - timeDestroyed;
+            float x = timeSinceDestroyed * scaleFactor * speed;
+            float y = -0.1 * pow(x - scaleFactor*3000, 2) + 0.1 * pow(scaleFactor*3000, 2);
+            glTranslatef(x, y, 0);
+            if(timeSinceDestroyed > 2000)
+            {
+                respawn();
+            }
+        }
+        else
+        {
+            spinPropellers();
+        }
         arms.at(i).draw();
         glPopMatrix();
     }
@@ -178,22 +198,24 @@ void Drone::drawCockpit()
 
 void Drone::updateDrone()
 {
-    forwardSpeed = 0;
-    rightSpeed = 0;
-    
-    if(controlActions[0]) changeElevation(deltaMove);
-    if(controlActions[1]) changeElevation(-deltaMove);
-    
-    forwardSpeed = ((controlActions[2]) ? deltaMove : forwardSpeed);
-    forwardSpeed = ((controlActions[3]) ? -deltaMove : forwardSpeed);
-    rightSpeed = ((controlActions[6]) ? deltaMove : rightSpeed);
-    rightSpeed = ((controlActions[7]) ? -deltaMove : rightSpeed);
-    
-    if(controlActions[4]) changeDirection(2.0);
-    if(controlActions[5]) changeDirection(-2.0);
-    
-    if(forwardSpeed == 0 && rightSpeed == 0) stabilize();
-    else move(forwardSpeed, rightSpeed);
+    if(!isDestroyed){
+        forwardSpeed = 0;
+        rightSpeed = 0;
+        
+        if(controlActions[0]) changeElevation(deltaMove);
+        if(controlActions[1]) changeElevation(-deltaMove);
+        
+        forwardSpeed = ((controlActions[2]) ? deltaMove : forwardSpeed);
+        forwardSpeed = ((controlActions[3]) ? -deltaMove : forwardSpeed);
+        rightSpeed = ((controlActions[6]) ? deltaMove : rightSpeed);
+        rightSpeed = ((controlActions[7]) ? -deltaMove : rightSpeed);
+        
+        if(controlActions[4]) changeDirection(2.0);
+        if(controlActions[5]) changeDirection(-2.0);
+        
+        if(forwardSpeed == 0 && rightSpeed == 0) stabilize();
+        else move(forwardSpeed, rightSpeed);
+    }
 }
 
 Vector3D Drone::getPosition()
@@ -209,6 +231,19 @@ float Drone::getRotationY()
 void Drone::setAction(int actionIndex, bool set)
 {
     controlActions[actionIndex] = set;
+}
+
+void Drone::destroy()
+{
+    isDestroyed = true;
+    timeDestroyed = glutGet(GLUT_ELAPSED_TIME);
+}
+
+void Drone::respawn()
+{
+    Vector3D respawnPoint(0.0, 3.0, 5.0);
+    isDestroyed = false;
+    position = respawnPoint;
 }
 
 

@@ -54,11 +54,13 @@ private:
     //rotate ccw, rotate cw, move right, move left
     bool controlActions[8];
     const GLfloat bodyScaleY = 0.65;
-    const float deltaMove = 0.1;
+    const float deltaMove = 0.02;
     
 public:
     
     bool propsSpinning;
+    bool isDestroyed;
+    float timeDestroyed;
     
     Drone();
     Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& position);
@@ -75,6 +77,8 @@ public:
     Vector3D getPosition();
     float getRotationY();
     void setAction(int actionIndex, bool set);
+    void destroy();
+    void respawn();
 };
 
 #endif /* Drone_h */

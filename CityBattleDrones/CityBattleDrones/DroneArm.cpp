@@ -41,14 +41,14 @@ void DroneArm::draw(){
     glTranslatef(armLength/2, 0.0, 0.0);
     glScalef(armLength, armWidth, armWidth);
     glRotatef(90, 0, 0, 1);
-    cube.draw(2003, stCoordinates, false, 0);
+    cube.draw(2001, stCoordinates, false, 0);
     glPopMatrix();
         
     //draws propeller base
     glPushMatrix();
     glTranslatef(armLength, 0.0, 0.0);
     glScalef(propBaseRadius*2, propBaseRadius*2*propBaseScaleY, propBaseRadius*2);
-    cube.draw(2003, stCoordinates, false, 0);
+    cube.draw(2001, stCoordinates, false, 0);
     glPopMatrix();
     
     //Draws the propeller

@@ -78,6 +78,18 @@
 		E84F895521A8898000FECB69 /* Vector2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vector2D.hpp; sourceTree = "<group>"; };
 		E84F895721A89FD700FECB69 /* skybox1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox1.bmp; sourceTree = "<group>"; };
 		E84F895821A8A87A00FECB69 /* cityGround1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = cityGround1.bmp; sourceTree = "<group>"; };
+		E84F895921A8D95D00FECB69 /* skybox2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox2.bmp; sourceTree = "<group>"; };
+		E84F895A21A8DBC500FECB69 /* skybox3.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox3.bmp; sourceTree = "<group>"; };
+		E84F895B21A8DE9D00FECB69 /* floorTex1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex1.bmp; sourceTree = "<group>"; };
+		E84F895C21A8E00200FECB69 /* floorTex2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex2.bmp; sourceTree = "<group>"; };
+		E84F895F21A8E2B700FECB69 /* floorTex3.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex3.bmp; sourceTree = "<group>"; };
+		E84F896221A9097600FECB69 /* roofTex1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = roofTex1.bmp; sourceTree = "<group>"; };
+		E84F896321A90AE500FECB69 /* roofTex2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = roofTex2.bmp; sourceTree = "<group>"; };
+		E84F896721A90FE400FECB69 /* roofTex3.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = roofTex3.bmp; sourceTree = "<group>"; };
+		E84F896921A9130B00FECB69 /* floorTex5.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex5.bmp; sourceTree = "<group>"; };
+		E84F896B21A9154600FECB69 /* floorTex6.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex6.bmp; sourceTree = "<group>"; };
+		E84F896C21A9161400FECB69 /* floorTex4.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex4.bmp; sourceTree = "<group>"; };
+		E84F896D21A91C5400FECB69 /* pride.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = pride.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,9 +149,21 @@
 				E84F894D21A780F600FECB69 /* Building.cpp */,
 				E84F895221A7851600FECB69 /* CityMetaData.txt */,
 				E84F893D21A2620700FECB69 /* steel.bmp */,
+				E84F896D21A91C5400FECB69 /* pride.bmp */,
+				E84F895C21A8E00200FECB69 /* floorTex2.bmp */,
+				E84F895F21A8E2B700FECB69 /* floorTex3.bmp */,
+				E84F896C21A9161400FECB69 /* floorTex4.bmp */,
+				E84F896921A9130B00FECB69 /* floorTex5.bmp */,
+				E84F896B21A9154600FECB69 /* floorTex6.bmp */,
+				E84F896721A90FE400FECB69 /* roofTex3.bmp */,
+				E84F896221A9097600FECB69 /* roofTex1.bmp */,
+				E84F896321A90AE500FECB69 /* roofTex2.bmp */,
 				E84F895821A8A87A00FECB69 /* cityGround1.bmp */,
+				E84F895B21A8DE9D00FECB69 /* floorTex1.bmp */,
 				E84F893C21A0DD7900FECB69 /* plank01.bmp */,
 				E84F895721A89FD700FECB69 /* skybox1.bmp */,
+				E84F895921A8D95D00FECB69 /* skybox2.bmp */,
+				E84F895A21A8DBC500FECB69 /* skybox3.bmp */,
 				E84F893E21A263AD00FECB69 /* redMetal.bmp */,
 				E84F894121A2654400FECB69 /* redMetal1.bmp */,
 				E84F894A21A3AF8700FECB69 /* jon.bmp */,

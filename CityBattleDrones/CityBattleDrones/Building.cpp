@@ -321,6 +321,40 @@ void Building::changeScaleFactors(Vector3D scaleDeltas)
     build();
 }
 
+bool Building::checkDroneCollision(Vector3D dronePos)
+{
+    if(dronePos.y > currentHeight || dronePos.y < 0)
+    {
+        return false;
+    }
+    // The floor height of the drone
+    // (example: drone could be 4.6 floor heights from the ground)
+    float droneFloor = dronePos.y/floorHeight;
+    
+    // The scale factors of the floor level below and above the drone
+    float floorBelowScale = verticalSpline(floor(droneFloor));
+    float floorAboveScale = verticalSpline(ceil(droneFloor));
+    
+    // Linerly interpolated scale at the exact height of the drone
+    float lerpScale = floorBelowScale + ((droneFloor - floor(droneFloor))*(floorAboveScale - floorBelowScale));
+    
+    float collisionRadius = (initialHeight/2)*lerpScale*scaleFactors.x;
+    
+    //distance between the drone' position and building's position in the XZ plane
+    Vector2D distanceVec(position.x - dronePos.x, position.z - dronePos.z);
+    float distance = distanceVec.getLength();
+    
+    if(distance < collisionRadius)
+    {
+        cout << "Floor: " << droneFloor << "\n";
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 
 string Building::getMetaData()
 {
@@ -348,7 +382,7 @@ string Building::getMetaData()
 void Building::processMetaData(string md)
 {
     istringstream iss(md);
-    floorHeight = 0.4;
+    floorHeight = 0.8;
     
     int i = 0;
     for (string line; getline(iss, line);)

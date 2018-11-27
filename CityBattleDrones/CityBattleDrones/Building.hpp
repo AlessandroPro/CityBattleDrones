@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "Polygon.hpp"
 #include "PrismMesh.hpp"
+#include "Vector2D.hpp"
 #include "Spline.cpp"
 #include <vector>
 #include <iostream>
@@ -51,6 +52,7 @@ public:
     void selectBaseControlPoint(int cpIndex);
     void shiftSelectedBaseControlPoint(float wvX, float wvY);
     void changeBaseControlPoint(int cpIndex, float newScale);
+    bool checkDroneCollision(Vector3D dronePos);
     string getMetaData();
     void processMetaData(string md);
 };

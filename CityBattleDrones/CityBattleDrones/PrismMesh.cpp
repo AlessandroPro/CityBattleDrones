@@ -59,11 +59,26 @@ void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex,
     glTranslatef(0.0, position.y, 0.0);
     if(baseTex)
     {
-        //PUT CODE FOR DETERMINING POSITIONS OF S AND T
-        //vector<float> sBaseCoords =
-        //vector<float> tBaseCoords =
-        //baseBottom.draw(baseTexID, sBaseCoords, tBaseCoords);
-        //baseTop.draw();
+        vector<Vector2D> stBaseCoords;
+    
+        for(int i = 0; i < numBaseEdges; i++)
+        {
+            float angle = (360.0/numBaseEdges)*i;
+            
+            float norm = 0.5;
+            float x = sin(angle * PI / 180.0)*norm;
+            float z = cos(angle * PI / 180.0)*norm;
+            
+            stBaseCoords.push_back(Vector2D(x,z));
+        }
+        //if the base is a square/rectangle, fit it perfectly to the texture
+        if(numBaseEdges == 4)
+        {
+            stBaseCoords.clear();
+            stBaseCoords = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
+        }
+        baseBottom.draw(baseTexID, stBaseCoords);
+        baseTop.draw(baseTexID, stBaseCoords);
     }
     else
     {

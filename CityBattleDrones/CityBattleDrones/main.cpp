@@ -30,7 +30,7 @@ int windowHeight;
 
 const int groundLength = 36;         // Default ground length 100 meters/unit
 const int groundWidth = 36;          // Default ground height 100 meters/unit
-const int worldSize = 60;            // Size of the world, used for the skybox
+const int worldSize = 150;            // Size of the world, used for the skybox
 
 //Initialize a drone object
 Vector3D spawnPoint(0.0, 3.0, 5.0);
@@ -42,6 +42,8 @@ PrismMesh prism;
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
 static vector<Building*> buildings;                //array of buildings
+static vector<int> buildingTextures;
+static vector<int> roofTextures;
 static string CityMetaDataFile = "CityMetaData.txt";
 static Polygon ground;
 static PrismMesh skybox;
@@ -54,7 +56,7 @@ static std::vector<RGBpixmap*> pm;  //array of pointers to pixelmaps for each te
 static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
 static GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 static GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-static GLfloat light_ambient[] = { 0.9F, 0.9F, 0.9F, 1.0F };
+static GLfloat light_ambient[] = { 0.99F, 0.99F, 0.99F, 1.0F };
 
 // Material properties for the ground blocks
 static GLfloat block_mat_ambient[] = { 0.3F, 0.2F, 0.05F, 1.0F };
@@ -165,13 +167,24 @@ void initOpenGL(int w, int h)
     
     
     //Load textures
-    texFiles.push_back(string("plank01.bmp"));      //2000
-    texFiles.push_back(string("steel.bmp"));        //2001
-    texFiles.push_back(string("jae2.bmp"));         //2002
-    texFiles.push_back(string("redMetal2.bmp"));    //2003
-    texFiles.push_back(string("floor1.bmp"));       //2004
-    texFiles.push_back(string("skybox1.bmp"));      //2005
-    texFiles.push_back(string("cityGround1.bmp"));  //2006
+    texFiles.push_back(string("cityGround1.bmp"));  //2000
+    
+    texFiles.push_back(string("redMetal2.bmp"));    //2001
+    
+    texFiles.push_back(string("skybox1.bmp"));      //2002
+    texFiles.push_back(string("skybox2.bmp"));      //2003
+    texFiles.push_back(string("skybox3.bmp"));      //2004
+    
+    texFiles.push_back(string("floorTex2.bmp"));    //2005
+    texFiles.push_back(string("floorTex3.bmp"));    //2006
+    texFiles.push_back(string("floorTex4.bmp"));    //2007
+    texFiles.push_back(string("floorTex5.bmp"));    //2008
+    texFiles.push_back(string("floorTex6.bmp"));    //2009
+    
+    texFiles.push_back(string("roofTex1.bmp"));    //2010
+    texFiles.push_back(string("roofTex2.bmp"));    //2011
+    texFiles.push_back(string("roofTex3.bmp"));    //2012
+    texFiles.push_back(string("pride.bmp"));       //2013
     
     pm = TextureUtils::loadTextures(texFiles);
     
@@ -202,6 +215,15 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
+    for(int i = 0; i < buildings.size(); i++)
+    {
+        if(buildings[i]->checkDroneCollision(drone.getPosition()) && !drone.isDestroyed)
+        {
+            drone.destroy();
+            break;
+        }
+    }
+
     drone.updateDrone();
     camera.changeFocus(drone.getPosition());
     camera.setAzimuth(180 + drone.getRotationY());
@@ -219,7 +241,7 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
     
     //Draw ground quad
-    ground.draw(2006, stCoordinates);
+    ground.draw(2000, stCoordinates);
     
     // Set ground block material properties
     glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
@@ -230,33 +252,14 @@ void display(void)
     
     for(int i = 0; i < buildings.size(); i++)
     {
-        buildings[i]->draw(2004, stCoordinates, false, 0);
+        buildings[i]->draw(2005 + buildingTextures[i], stCoordinates, true, 2010 + roofTextures[i]);
+        //buildings[i]->draw(2013, stCoordinates, true, 2013);
     }
     
     //skybox
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    skybox.draw(2005, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
+    skybox.draw(2002, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
 
-
-    
-//    
-//    // Draw ground Block1
-//    glPushMatrix();
-//    glTranslatef(1.0, -2.5, 1.0);
-//    glRotatef(45.0, 0.0, 1.0, 0.0);
-//    glScalef(3.0, 5.0, 1.0);
-//    glutSolidCube(1.0);
-//    glPopMatrix();
-//    
-//    // Draw ground Block2
-//    glPushMatrix();
-//    glTranslatef(-4.0, -1.0, 4.0);
-//    glRotatef(30.0, 0.0, 1.0, 0.0);
-//    glScalef(2.0, 2.0, 3.0);
-//    glutSolidCube(1.0);
-//    glPopMatrix();
-//    
-//    prism.draw();
     
     glutSwapBuffers();   // Double buffering, swap buffers
 }
@@ -276,10 +279,6 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
     {
-        case 'p':
-            drone.propsSpinning = !drone.propsSpinning;
-            glutTimerFunc(5.0, toggleDronePropellers, 0);
-            break;
         case 'w':
             drone.setAction(2, true);
             break;
@@ -294,6 +293,9 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'h':
             printControls();
+            break;
+        case 'x':
+            drone.destroy();
             break;
         case 'i':
         {
@@ -394,16 +396,6 @@ Vector3D ScreenToWorld(int x, int y)
     return Vector3D(0, 0, 0);
 }
 
-// Spins the drone's propellers if the drone is on
-void toggleDronePropellers(int val)
-{
-    // Recursive loop to keep the propellers spinning
-    if(drone.propsSpinning){
-        drone.spinPropellers();
-        glutTimerFunc(4.0, toggleDronePropellers, 0);
-    }
-}
-
 void mouseButtonHandler(int button, int state, int xMouse, int yMouse)
 {
     currentButton = button;
@@ -496,6 +488,10 @@ void loadCity(string filename)
         for (auto& bld : loadedBuildings)
         {
             buildings.push_back(bld);
+            int randIndex = rand() % 5;
+            buildingTextures.push_back(randIndex);
+            randIndex = rand() % 3;
+            roofTextures.push_back(randIndex);
         }
         glutPostRedisplay();
         myfile.close();

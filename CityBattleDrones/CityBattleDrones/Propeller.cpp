@@ -23,10 +23,8 @@ Propeller::Propeller(GLfloat bladeLength, int numPropBlades):
 void Propeller::draw()
 {
     //draws propeller pivot
-    // CTM = I * T1 * R1 * R2 * S1 * R3 * T6
     glPushMatrix();
-    glScalef(pivotRadius, pivotRadius, pivotRadius); //S7
-    // p' = I * T1 * R1 * R2 * S1 * R3 * T6 * S7 * p
+    glScalef(pivotRadius, pivotRadius, pivotRadius);
     glutSolidSphere(1.0, 20.0, 20.0); // propeller pivot
     glPopMatrix();
     
@@ -51,14 +49,12 @@ void Propeller::drawBlades()
         if(spinAngle > 360.0){
             spinAngle -= 360.0;
         }
-        // CTM = I * T1 * R1 * R2 * S1 * R3 * T6
         glPushMatrix();
         // Rotates the blade to its designated spot around the pivot's up axis
         // with the spin offset applied
-        glRotatef(spinAngle, 0.0, 1.0, 0.0); //R4
-        glTranslatef(bladeLength/2, 0.0, 0.0); //T7
-        glScalef(bladeLength/2, 0.25*pivotRadius, pivotRadius); //S8
-        // p' = I * T1 * R1 * R2 * S1 * R3 * T6 * R4 * T7 * S8 * p
+        glRotatef(spinAngle, 0.0, 1.0, 0.0);
+        glTranslatef(bladeLength/2, 0.0, 0.0);
+        glScalef(bladeLength/2, 0.25*pivotRadius, pivotRadius);
         glutSolidSphere(1.0, 20.0, 20.0); // propeller blade
         glPopMatrix();
     }
@@ -67,7 +63,7 @@ void Propeller::drawBlades()
 // Offsets the rotation of each propeller blade
 void Propeller::spin()
 {
-    spinOff += 25.0;
+    spinOff += 4.0;
     if(spinOff >360.0){
         spinOff -= 360.0;
     }
