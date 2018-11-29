@@ -17,6 +17,7 @@
 #include "Vector3D.hpp"
 #include "DroneArm.hpp"
 #include "PrismMesh.hpp"
+#include "Missile.hpp"
 #include <vector>
 #include <math.h>
 #include <iostream>
@@ -50,6 +51,7 @@ private:
     Vector3D tiltAxis;
     PrismMesh prism;
     vector<DroneArm> arms;
+    vector<Missile> missiles;
     //boolean array to keep track of when a control is actioned:
     //move up, move down, move forward, move backward,
     //rotate ccw, rotate cw, move right, move left
@@ -80,6 +82,7 @@ public:
     void setAction(int actionIndex, bool set);
     void destroy();
     void respawn();
+    void launchMissile();
 };
 
 #endif /* Drone_h */

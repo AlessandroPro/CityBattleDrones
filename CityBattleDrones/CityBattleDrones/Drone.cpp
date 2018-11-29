@@ -18,6 +18,7 @@ Drone::Drone():
     forward(Vector3D(0.0, 0.0, 1.0)),
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
     prism(PrismMesh(6)),
+    missiles({}),
     controlActions{false, false, false, false, false, false, false, false},
     propsSpinning(false),
     isDestroyed(false),
@@ -39,7 +40,7 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spaw
     forward(Vector3D(0.0, 0.0, 1.0)),
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
     prism(PrismMesh(6)),
-    controlActions{false, false, false, false, false, false},
+    controlActions{false, false, false, false, false, false, false, false},
     propsSpinning(false),
     isDestroyed(false),
     timeDestroyed(0)
@@ -83,6 +84,11 @@ void Drone::draw()
     
     drawCockpit();
     glPopMatrix();
+    
+    for(int i = 0; i < missiles.size(); i++)
+    {
+        missiles[i].draw();
+    }
 }
 
 // Draws the drone arms, evenly spaced around the drone's central up axis
@@ -243,6 +249,11 @@ void Drone::updateDrone()
         if(forwardSpeed == 0 && rightSpeed == 0) stabilize();
         else move(forwardSpeed, rightSpeed);
     }
+    
+    for(int i = 0; i < missiles.size(); i++)
+    {
+        missiles[i].update();
+    }
 }
 
 Vector3D Drone::getPosition()
@@ -278,6 +289,12 @@ void Drone::respawn()
 {
     isDestroyed = false;
     position = spawnPoint;
+}
+
+void Drone::launchMissile()
+{
+    Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,3,5), 2001, 2001);
+    missiles.push_back(missile);
 }
 
 

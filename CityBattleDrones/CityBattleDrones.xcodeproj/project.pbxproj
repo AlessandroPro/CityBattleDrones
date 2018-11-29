@@ -22,6 +22,7 @@
 		E84F895121A781AF00FECB69 /* Spline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895021A781AF00FECB69 /* Spline.cpp */; };
 		E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895421A8898000FECB69 /* Vector2D.cpp */; };
 		E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897321AF562E00FECB69 /* Stb_image.cpp */; };
+		E84F897A21B04D5200FECB69 /* Missile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897821B04D5200FECB69 /* Missile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -96,6 +97,8 @@
 		E84F897521AF628000FECB69 /* banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = banner.png; sourceTree = "<group>"; };
 		E84F897621AF767F00FECB69 /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
 		E84F897721AFAB1E00FECB69 /* smoke1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smoke1.png; sourceTree = "<group>"; };
+		E84F897821B04D5200FECB69 /* Missile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Missile.cpp; sourceTree = "<group>"; };
+		E84F897921B04D5200FECB69 /* Missile.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Missile.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +135,8 @@
 			isa = PBXGroup;
 			children = (
 				E84F897321AF562E00FECB69 /* Stb_image.cpp */,
+				E84F897821B04D5200FECB69 /* Missile.cpp */,
+				E84F897921B04D5200FECB69 /* Missile.hpp */,
 				E84F8916219F91AE00FECB69 /* Drone.cpp */,
 				E84F8914219F91AE00FECB69 /* Drone.hpp */,
 				E84F8913219F91AE00FECB69 /* DroneArm.cpp */,
@@ -256,6 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E84F897A21B04D5200FECB69 /* Missile.cpp in Sources */,
 				E84F8924219F91AF00FECB69 /* main.cpp in Sources */,
 				E84F893521A0A92900FECB69 /* Polygon.cpp in Sources */,
 				E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */,

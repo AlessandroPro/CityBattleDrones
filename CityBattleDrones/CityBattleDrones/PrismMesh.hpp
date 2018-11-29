@@ -47,6 +47,7 @@ public:
     void rotateY(float deltaY);
     void moveAlongGround(float deltaX, float deltaY);
     void changeScaleFactors(Vector3D scaleDeltas);
+    int getNumSides();
 };
 
 #endif /* PrismMesh_hpp */

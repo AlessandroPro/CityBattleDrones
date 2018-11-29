@@ -17,6 +17,7 @@
 #include "Drone.hpp"
 #include "Camera.hpp"
 #include "Building.hpp"
+#include "Missile.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -42,7 +43,7 @@ Vector3D enemySpawnPoint(0.0, 3.0, 6.0);
 // positioned at spawnPoint
 Drone dronePlayer(0.02, 6, 2, playerSpawnPoint);
 Drone droneEnemy(0.02, 6, 2, enemySpawnPoint);
-PrismMesh prism;
+
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
 static vector<Building*> buildings;                //array of buildings
@@ -340,6 +341,9 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'x':
             droneEnemy.destroy();
+            break;
+        case 'c':
+            dronePlayer.launchMissile();
             break;
         case 'i':
         {

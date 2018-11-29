@@ -212,6 +212,11 @@ void PrismMesh::changeScaleFactors(Vector3D scaleDeltas)
     currentHeight = initialHeight * scaleFactors.y;
 }
 
+int PrismMesh::getNumSides()
+{
+    return numBaseEdges;
+}
+
 
 
 
