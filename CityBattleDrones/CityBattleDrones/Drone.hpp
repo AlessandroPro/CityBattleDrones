@@ -25,8 +25,8 @@
 
 // Material properties
 static GLfloat drone_mat_ambient[] = { 0.4F, 0.2F, 0.05F, 1.0F };
-static GLfloat drone_mat_specular[] = { 0.3F, 0.3F, 0.1F, 1.0F };
-static GLfloat drone_mat_diffuse[] = { 0.1F, 0.1F, 0.8F, 0.0F };
+static GLfloat drone_mat_specular[] = { 0.5F, 0.5F, 0.4F, 1.0F };
+static GLfloat drone_mat_diffuse[] = { 0.1F, 0.1F, 0.8F, 0.2F };
 static GLfloat drone_mat_shininess[] = { 0.8F };
 
 using namespace std;
@@ -44,10 +44,11 @@ private:
     float rightSpeed;
     GLfloat tiltAngle;
     Vector3D position;
+    Vector3D spawnPoint;
     Vector3D rotation;
     Vector3D forward;
     Vector3D tiltAxis;
-    PrismMesh cube;
+    PrismMesh prism;
     vector<DroneArm> arms;
     //boolean array to keep track of when a control is actioned:
     //move up, move down, move forward, move backward,

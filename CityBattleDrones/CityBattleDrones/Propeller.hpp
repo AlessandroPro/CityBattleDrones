@@ -17,9 +17,9 @@
 #include "Vector3D.hpp"
 
 // Material properties
-static GLfloat prop_mat_ambient[] = { 0.4F, 0.2F, 0.0F, 1.0F };
-static GLfloat prop_mat_specular[] = { 0.1F, 0.1F, 0.0F, 1.0F };
-static GLfloat prop_mat_diffuse[] = { 1.0F, 1.0F, 1.0F, 1.0F };
+static GLfloat prop_mat_ambient[] = { 0.25F, 0.2F, 0.2F, 1.0F };
+static GLfloat prop_mat_specular[] = { 0.65F, 0.6F, 0.6F, 1.0F };
+static GLfloat prop_mat_diffuse[] = { 1.0F, 1.0F, 1.0F, 0.1F };
 static GLfloat prop_mat_shininess[] = { 0.0F };
 
 using namespace std;

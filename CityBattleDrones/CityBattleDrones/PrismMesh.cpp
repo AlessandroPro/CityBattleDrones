@@ -11,10 +11,21 @@
 PrismMesh::PrismMesh():
     numBaseEdges(4),
     rotationY(0.0),
-    initialHeight(1.0), //Initial height is 100meters/unit
+    initialHeight(1.0),
     currentHeight(initialHeight),
     scaleFactors(Vector3D(1.0, 1.0, 1.0)),
-    position(Vector3D(0.0, initialHeight/2, 0.0))
+    position(Vector3D(0.0, 0.0, 0.0))
+    {
+        build();
+    }
+
+PrismMesh::PrismMesh(int numEdges):
+    numBaseEdges(numEdges),
+    rotationY(0.0),
+    initialHeight(1.0),
+    currentHeight(initialHeight),
+    scaleFactors(Vector3D(1.0, 1.0, 1.0)),
+    position(Vector3D(0.0, 0.0, 0.0))
     {
         build();
     }
@@ -25,7 +36,7 @@ PrismMesh::PrismMesh(int numEdges, float height, float rotY, float posX, float p
     initialHeight(height),
     currentHeight(initialHeight),
     scaleFactors(scale),
-    position(Vector3D(posX, initialHeight/2, posZ))
+    position(Vector3D(posX, 0.0, posZ))
     {
         build();
     }
@@ -34,10 +45,9 @@ PrismMesh::PrismMesh(int numEdges, float height, float rotY, float posX, float p
 void PrismMesh::draw()
 {
     glPushMatrix();
-    glTranslatef(position.x, 0.0, position.z);
+    glTranslatef(position.x, position.y, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
-    //glTranslatef(0.0, position.y, 0.0);
     baseBottom.draw();
     baseTop.draw();
     for (auto& quad : quads)
@@ -53,10 +63,15 @@ void PrismMesh::draw()
 void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex, int baseTexID)
 {
     glPushMatrix();
-    glTranslatef(position.x, 0.0, position.z);
+    glTranslatef(position.x, position.y, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
-    glTranslatef(0.0, position.y, 0.0);
+    
+    for (auto& quad : quads)
+    {
+        quad.draw(quadTexID, stQuadCoords, false);
+    }
+    
     if(baseTex)
     {
         vector<Vector2D> stBaseCoords;
@@ -77,17 +92,13 @@ void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex,
             stBaseCoords.clear();
             stBaseCoords = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
         }
-        baseBottom.draw(baseTexID, stBaseCoords);
-        baseTop.draw(baseTexID, stBaseCoords);
+        baseBottom.draw(baseTexID, stBaseCoords, false);
+        baseTop.draw(baseTexID, stBaseCoords, false);
     }
     else
     {
         baseBottom.draw();
         baseTop.draw();
-    }
-    for (auto& quad : quads)
-    {
-        quad.draw(quadTexID, stQuadCoords);
     }
     glPopMatrix();
 }
@@ -99,17 +110,16 @@ void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex,
 void PrismMesh::draw(int texID, vector<vector<Vector2D>> stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords)
 {
     glPushMatrix();
-    glTranslatef(position.x, 0, position.z);
+    glTranslatef(position.x, position.y, position.z);
     glRotatef(rotationY, 0.0, 1.0, 0.0);
     glScalef(scaleFactors.x, scaleFactors.y, scaleFactors.z);
-    //glTranslatef(0.0, position.y, 0.0);
     
-    baseBottom.draw(texID, stBottomCoords);
-    baseTop.draw(texID, stTopCoords);
+    baseBottom.draw(texID, stBottomCoords, false);
+    baseTop.draw(texID, stTopCoords, false);
 
     for (int i = 0; i < quads.size(); i++)
     {
-        quads[i].draw(texID, stSideCoords[i]);
+        quads[i].draw(texID, stSideCoords[i], false);
     }
     glPopMatrix();
 }

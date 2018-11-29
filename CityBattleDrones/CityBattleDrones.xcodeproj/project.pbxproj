@@ -21,6 +21,7 @@
 		E84F894F21A780F600FECB69 /* Building.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F894D21A780F600FECB69 /* Building.cpp */; };
 		E84F895121A781AF00FECB69 /* Spline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895021A781AF00FECB69 /* Spline.cpp */; };
 		E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895421A8898000FECB69 /* Vector2D.cpp */; };
+		E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897321AF562E00FECB69 /* Stb_image.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -90,6 +91,11 @@
 		E84F896B21A9154600FECB69 /* floorTex6.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex6.bmp; sourceTree = "<group>"; };
 		E84F896C21A9161400FECB69 /* floorTex4.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floorTex4.bmp; sourceTree = "<group>"; };
 		E84F896D21A91C5400FECB69 /* pride.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = pride.bmp; sourceTree = "<group>"; };
+		E84F896F21AE407700FECB69 /* steelGradient.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = steelGradient.bmp; sourceTree = "<group>"; };
+		E84F897321AF562E00FECB69 /* Stb_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Stb_image.cpp; sourceTree = "<group>"; };
+		E84F897521AF628000FECB69 /* banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = banner.png; sourceTree = "<group>"; };
+		E84F897621AF767F00FECB69 /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
+		E84F897721AFAB1E00FECB69 /* smoke1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smoke1.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +131,7 @@
 		E84F8904219F90DD00FECB69 /* CityBattleDrones */ = {
 			isa = PBXGroup;
 			children = (
+				E84F897321AF562E00FECB69 /* Stb_image.cpp */,
 				E84F8916219F91AE00FECB69 /* Drone.cpp */,
 				E84F8914219F91AE00FECB69 /* Drone.hpp */,
 				E84F8913219F91AE00FECB69 /* DroneArm.cpp */,
@@ -148,8 +155,12 @@
 				E84F894E21A780F600FECB69 /* Building.hpp */,
 				E84F894D21A780F600FECB69 /* Building.cpp */,
 				E84F895221A7851600FECB69 /* CityMetaData.txt */,
+				E84F897621AF767F00FECB69 /* circle.png */,
+				E84F897721AFAB1E00FECB69 /* smoke1.png */,
 				E84F893D21A2620700FECB69 /* steel.bmp */,
+				E84F897521AF628000FECB69 /* banner.png */,
 				E84F896D21A91C5400FECB69 /* pride.bmp */,
+				E84F896F21AE407700FECB69 /* steelGradient.bmp */,
 				E84F895C21A8E00200FECB69 /* floorTex2.bmp */,
 				E84F895F21A8E2B700FECB69 /* floorTex3.bmp */,
 				E84F896C21A9161400FECB69 /* floorTex4.bmp */,
@@ -247,6 +258,7 @@
 			files = (
 				E84F8924219F91AF00FECB69 /* main.cpp in Sources */,
 				E84F893521A0A92900FECB69 /* Polygon.cpp in Sources */,
+				E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */,
 				E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */,
 				E84F8925219F91AF00FECB69 /* Propeller.cpp in Sources */,
 				E84F895121A781AF00FECB69 /* Spline.cpp in Sources */,

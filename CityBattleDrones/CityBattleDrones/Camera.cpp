@@ -12,7 +12,7 @@
 Camera::Camera():
     azimuth(0),
     elevation(25),
-    zoomDistance(0.001),
+    zoomDistance(DEFAULT_ZOOM),
     clickX(0),
     clickY(0),
     clickAndDrag(false),

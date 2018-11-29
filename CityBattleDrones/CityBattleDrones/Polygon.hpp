@@ -33,7 +33,7 @@ class Polygon
         Polygon();
         void calculateNormal();
         void draw();
-        void draw(int texID, vector<Vector2D> stCoordinates);
+        void draw(int texID, vector<Vector2D> stCoordinates, bool hasAlpha);
 };
 
 #endif /* Polygon_hpp */

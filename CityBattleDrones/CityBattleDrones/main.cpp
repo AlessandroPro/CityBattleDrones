@@ -21,6 +21,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#define STB_IMAGE_IMPLEMENTATION
+#include "Stb_image.cpp"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 const int vWidth = 850;     // Viewport width in pixels
@@ -33,11 +35,13 @@ const int groundWidth = 36;          // Default ground height 100 meters/unit
 const int worldSize = 150;            // Size of the world, used for the skybox
 
 //Initialize a drone object
-Vector3D spawnPoint(0.0, 3.0, 5.0);
+Vector3D playerSpawnPoint(0.0, 3.0, 5.0);
+Vector3D enemySpawnPoint(0.0, 3.0, 6.0);
 // Creates a drone with a scaleFactor of 1.0;
 // with 5 arms and 2 propeller blades per arm;
 // positioned at spawnPoint
-Drone drone(0.002, 6, 2, spawnPoint);
+Drone dronePlayer(0.02, 6, 2, playerSpawnPoint);
+Drone droneEnemy(0.02, 6, 2, enemySpawnPoint);
 PrismMesh prism;
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
@@ -54,8 +58,8 @@ static std::vector<RGBpixmap*> pm;  //array of pointers to pixelmaps for each te
 
 // Light properties
 static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
-static GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-static GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+static GLfloat light_diffuse[] = { 1.0, 1.0, 0.8, 1.0 };
+static GLfloat light_specular[] = { 1.0, 1.0, 0.8, 1.0 };
 static GLfloat light_ambient[] = { 0.99F, 0.99F, 0.99F, 1.0F };
 
 // Material properties for the ground blocks
@@ -114,6 +118,7 @@ void mouseButtonHandler(int button, int state, int xMouse, int yMouse);
 void mouseMotionHandler(int xMouse, int yMouse);
 void printControls();
 void loadCity(string filename);
+void loadTexture(vector<string> texFiles);
 
 int main(int argc, char **argv)
 {
@@ -169,7 +174,7 @@ void initOpenGL(int w, int h)
     //Load textures
     texFiles.push_back(string("cityGround1.bmp"));  //2000
     
-    texFiles.push_back(string("redMetal2.bmp"));    //2001
+    texFiles.push_back(string("steelGradient.bmp"));    //2001
     
     texFiles.push_back(string("skybox1.bmp"));      //2002
     texFiles.push_back(string("skybox2.bmp"));      //2003
@@ -188,6 +193,8 @@ void initOpenGL(int w, int h)
     
     pm = TextureUtils::loadTextures(texFiles);
     
+    loadTexture(texFiles);
+    
     skybox.changeScaleFactors(Vector3D(worldSize, worldSize, worldSize));
     
     ground.verts.push_back(Vector3D(groundLength/2, 0.0, -groundWidth/2));
@@ -195,6 +202,9 @@ void initOpenGL(int w, int h)
     ground.verts.push_back(Vector3D(-groundLength/2, 0.0, groundWidth/2));
     ground.verts.push_back(Vector3D(-groundLength/2, 0.0, -groundWidth/2));
     ground.calculateNormal();
+    
+    
+    // stb_image loader
 }
 
 
@@ -205,6 +215,7 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
     vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
     
     glViewport(0, 0, (GLsizei)windowWidth, (GLsizei)windowHeight);
@@ -217,22 +228,40 @@ void display(void)
     
     for(int i = 0; i < buildings.size(); i++)
     {
-        if(buildings[i]->checkDroneCollision(drone.getPosition()) && !drone.isDestroyed)
+        if(buildings[i]->checkDroneCollision(dronePlayer.getPosition()) && !dronePlayer.isDestroyed)
         {
-            drone.destroy();
+            dronePlayer.destroy();
             break;
         }
     }
+    
+    // Zoom the camera out when the dronePlayer is destroyed
+//    if(dronePlayer.isDestroyed)
+//    {
+//        float timeSinceDestroyed = glutGet(GLUT_ELAPSED_TIME) - dronePlayer.timeDestroyed;
+//        if(timeSinceDestroyed < 1500)
+//        {
+//            camera.setZoomChangeRate(-0.001);
+//            camera.controlActions[2] = true;
+//        }
+//        else
+//        {
+//            camera.controlActions[2] = false;
+//            camera.setZoom(DEFAULT_ZOOM);
+//        }
+//    }
+    
 
-    drone.updateDrone();
-    camera.changeFocus(drone.getPosition());
-    camera.setAzimuth(180 + drone.getRotationY());
+    dronePlayer.updateDrone();
+    droneEnemy.updateDrone();
+    camera.changeFocus(dronePlayer.getPosition());
+    camera.setAzimuth(180 + dronePlayer.getRotationY());
     camera.update();
     
     gluLookAt(camera.position.x, camera.position.y, camera.position.z, camera.focus.x, camera.focus.y, camera.focus.z, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
-    drone.draw();
+    
     
     // Set material properties of the ground
     glMaterialfv(GL_FRONT, GL_AMBIENT, ground_ambient);
@@ -241,7 +270,7 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
     
     //Draw ground quad
-    ground.draw(2000, stCoordinates);
+    ground.draw(2000, stCoordinates, false);
     
     // Set ground block material properties
     glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
@@ -250,16 +279,26 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
     
     
-    for(int i = 0; i < buildings.size(); i++)
-    {
-        buildings[i]->draw(2005 + buildingTextures[i], stCoordinates, true, 2010 + roofTextures[i]);
-        //buildings[i]->draw(2013, stCoordinates, true, 2013);
-    }
-    
     //skybox
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     skybox.draw(2002, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
-
+    
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    
+    for(int i = 0; i < buildings.size(); i++)
+    {
+        buildings[i]->draw(2005 + buildingTextures[i], stCoordinates, true, 2010 + roofTextures[i]);
+        //buildings[i]->draw(3000, stCoordinates, true, 3000);
+    }
+    
+    droneEnemy.draw();
+    dronePlayer.draw();
+    float distanceBetweenDrones = Vector3D::subtract(droneEnemy.getPosition(), dronePlayer.getPosition()).getLength();
+    if(distanceBetweenDrones < 0.04 && !dronePlayer.isDestroyed)
+    {
+        droneEnemy.destroy();
+        dronePlayer.destroy();
+    }
     
     glutSwapBuffers();   // Double buffering, swap buffers
 }
@@ -279,23 +318,28 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
     {
+        case 27:
+            exit(0);
+            break;
+        case 'f':
+            glutFullScreen();
         case 'w':
-            drone.setAction(2, true);
+            dronePlayer.setAction(2, true);
             break;
         case 's':
-            drone.setAction(3, true);
+            dronePlayer.setAction(3, true);
             break;
         case 'a':
-            drone.setAction(7, true);
+            dronePlayer.setAction(7, true);
             break;
         case 'd':
-            drone.setAction(6, true);
+            dronePlayer.setAction(6, true);
             break;
         case 'h':
             printControls();
             break;
         case 'x':
-            drone.destroy();
+            droneEnemy.destroy();
             break;
         case 'i':
         {
@@ -318,16 +362,16 @@ void keyboardUp(unsigned char key, int x, int y)
     switch (key)
     {
         case 'w':
-            drone.setAction(2, false);
+            dronePlayer.setAction(2, false);
             break;
         case 's':
-            drone.setAction(3, false);
+            dronePlayer.setAction(3, false);
             break;
         case 'a':
-            drone.setAction(7, false);
+            dronePlayer.setAction(7, false);
             break;
         case 'd':
-            drone.setAction(6, false);
+            dronePlayer.setAction(6, false);
             break;
         case 'v':
         {
@@ -349,20 +393,20 @@ void functionKeys(int key, int x, int y)
 {
     if (key == GLUT_KEY_DOWN)
     {
-        //drone.changeElevation(-0.5);
-        drone.setAction(1, true);
+        //dronePlayer.changeElevation(-0.5);
+        dronePlayer.setAction(1, true);
     }
     else if (key == GLUT_KEY_UP){
-        //drone.changeElevation(0.5);
-        drone.setAction(0, true);
+        //dronePlayer.changeElevation(0.5);
+        dronePlayer.setAction(0, true);
     }
     else if (key == GLUT_KEY_LEFT){
-        //drone.changeDirection(5.0);
-        drone.setAction(4, true);
+        //dronePlayer.changeDirection(5.0);
+        dronePlayer.setAction(4, true);
     }
     else if (key == GLUT_KEY_RIGHT){
-        //drone.changeDirection(-5.0);
-        drone.setAction(5, true);
+        //dronePlayer.changeDirection(-5.0);
+        dronePlayer.setAction(5, true);
     }
     glutPostRedisplay();   // Trigger a window redisplay
 }
@@ -371,20 +415,20 @@ void functionKeysUp(int key, int x, int y)
 {
     if (key == GLUT_KEY_DOWN)
     {
-        //drone.changeElevation(-0.5);
-        drone.setAction(1, false);
+        //dronePlayer.changeElevation(-0.5);
+        dronePlayer.setAction(1, false);
     }
     else if (key == GLUT_KEY_UP){
-        //drone.changeElevation(0.5);
-        drone.setAction(0, false);
+        //dronePlayer.changeElevation(0.5);
+        dronePlayer.setAction(0, false);
     }
     else if (key == GLUT_KEY_LEFT){
-        //drone.changeDirection(5.0);
-        drone.setAction(4, false);
+        //dronePlayer.changeDirection(5.0);
+        dronePlayer.setAction(4, false);
     }
     else if (key == GLUT_KEY_RIGHT){
-        //drone.changeDirection(-5.0);
-        drone.setAction(5, false);
+        //dronePlayer.changeDirection(-5.0);
+        dronePlayer.setAction(5, false);
     }
     glutPostRedisplay();   // Trigger a window redisplay
 }
@@ -437,10 +481,10 @@ void mouseMotionHandler(int xMouse, int yMouse)
     glutPostRedisplay();
 }
 
-// Prints the drone controls to the standard output
+// Prints the dronePlayer controls to the standard output
 void printControls()
 {
-    string controls = "\nHere are the controls for the drone:\n\n";
+    string controls = "\nHere are the controls for the dronePlayer:\n\n";
     controls += "Move Up:                   Up Arrow Key\n";
     controls += "Move Down:                 Down Arrow Key\n";
     controls += "Rotate ClockWise:          Right Arrow Key\n";
@@ -499,7 +543,32 @@ void loadCity(string filename)
     else cout << "Unable to open file";
 }
 
-
+void loadTexture(vector<string> texFiles)
+{
+    //for(int i = 0; i < texFiles.size(); i++)
+    //{
+        int x,y,n;
+        char const* filename = "smoke1.png";
+        unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
+    
+        glBindTexture(GL_TEXTURE_2D, 3000);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        if (n == 3)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
+        else if (n == 4)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        }
+        // ... process data if not NULL ...
+        // ... x = width, y = height, n = # 8-bit components per pixel ...
+        // ... replace '0' with '1'..'4' to force that many components per pixel
+        // ... but 'n' will always be the number that it would have been if you said 0
+        //stbi_image_free(data);
+    //}
+}
 
 
 

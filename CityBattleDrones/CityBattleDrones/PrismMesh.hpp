@@ -37,6 +37,7 @@ public:
     std::vector<Polygon> quads;
     
     PrismMesh();
+    PrismMesh(int numEdges);
     PrismMesh(int numEdges, float height, float rotY, float posX, float posZ, Vector3D scale);
     void draw();
     void draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex, int baseTexID);

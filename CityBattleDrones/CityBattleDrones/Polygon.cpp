@@ -41,10 +41,17 @@ void Polygon::draw()
     glEnd();
 }
 
-void Polygon::draw(int texID, vector<Vector2D> stCoordinates)
+void Polygon::draw(int texID, vector<Vector2D> stCoordinates, bool hasAlpha)
 {
     glBindTexture(GL_TEXTURE_2D, texID);
     glEnable(GL_TEXTURE_2D);
+    
+    if(hasAlpha)
+    {
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
     
     glBegin(GL_POLYGON);
     glNormal3f(normal.x, normal.y, normal.z);
@@ -53,6 +60,13 @@ void Polygon::draw(int texID, vector<Vector2D> stCoordinates)
         glVertex3f(verts[i].x, verts[i].y, verts[i].z);
     }
     glEnd();
+    
+    if(hasAlpha)
+    {
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glEnable(GL_LIGHTING);
+    }
     
     glDisable(GL_TEXTURE_2D);
 }

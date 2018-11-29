@@ -13,10 +13,11 @@ Drone::Drone():
     rightSpeed(0),
     tiltAngle(0.0),
     position(Vector3D(0.0, 0.0, 0.0)),
+    spawnPoint(Vector3D(0.0, 0.0, 0.0)),
     rotation(Vector3D(0.0, 0.0, 0.0)),
     forward(Vector3D(0.0, 0.0, 1.0)),
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
-    cube(PrismMesh()),
+    prism(PrismMesh(6)),
     controlActions{false, false, false, false, false, false, false, false},
     propsSpinning(false),
     isDestroyed(false),
@@ -25,18 +26,19 @@ Drone::Drone():
     createArms(3.0, 0.5);
 }
 
-Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& position):
+Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spawnPoint):
     scaleFactor(scaleFactor),
     numArms(numArms),
     numPropBlades(numPropBlades),
     forwardSpeed(0.0),
     rightSpeed(0.0),
     tiltAngle(0.0),
-    position(position),
+    position(spawnPoint),
+    spawnPoint(spawnPoint),
     rotation(Vector3D(0.0, 0.0, 0.0)),
     forward(Vector3D(0.0, 0.0, 1.0)),
     tiltAxis(Vector3D(0.0, 0.0, 0.0)),
-    cube(PrismMesh()),
+    prism(PrismMesh(6)),
     controlActions{false, false, false, false, false, false},
     propsSpinning(false),
     isDestroyed(false),
@@ -80,9 +82,6 @@ void Drone::draw()
     glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
     
     drawCockpit();
-    glScalef(1.0, bodyScaleY, 1.0);
-    cube.draw();
-    //glutSolidSphere(1.0, 20.0, 20.0); //drone body
     glPopMatrix();
 }
 
@@ -92,15 +91,17 @@ void Drone::drawArms()
     for(int i = 0; i < arms.size(); i++){
 
         glPushMatrix();
-        // Rotates the arm to it's designated spot around the drone's central up axis
-        glRotatef((360/numArms)*i, 0.0, 1.0, 0.0);
         if(isDestroyed)
         {
-            float speed = 15;
+            float speed = 1.5;
             float timeSinceDestroyed = glutGet(GLUT_ELAPSED_TIME) - timeDestroyed;
             float x = timeSinceDestroyed * scaleFactor * speed;
-            float y = -0.1 * pow(x - scaleFactor*3000, 2) + 0.1 * pow(scaleFactor*3000, 2);
+            float y = -0.1 * pow(x - scaleFactor*300, 2) + 0.1 * pow(scaleFactor*300, 2);
+            // Rotates the arm to it's designated spot around the drone's central up axis
+            glRotatef((360/numArms)*i * arms.at(i).destroyRotations.y, 0, 1, 0);
             glTranslatef(x, y, 0);
+            glRotatef(timeSinceDestroyed * arms.at(i).destroyRotations.z/10, 0, 0, 1);
+            glRotatef(timeSinceDestroyed * arms.at(i).destroyRotations.x/10, 1, 0, 0);
             if(timeSinceDestroyed > 2000)
             {
                 respawn();
@@ -108,6 +109,8 @@ void Drone::drawArms()
         }
         else
         {
+            // Rotates the arm to it's designated spot around the drone's central up axis
+            glRotatef((360/numArms)*i, 0.0, 1.0, 0.0);
             spinPropellers();
         }
         arms.at(i).draw();
@@ -179,26 +182,50 @@ void Drone::stabilize()
     tiltAngle = 0.0;
 }
 
-// Draws a cockpit, which is made up of cube as well as sphere portruding
-// the cube in the drone's forward direction
+// Draws a cockpit
 void Drone::drawCockpit()
 {
+    vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
+    
     glPushMatrix();
+    if(isDestroyed)
+    {
+        float timeSinceDestroyed = glutGet(GLUT_ELAPSED_TIME) - timeDestroyed;
+        
+        // Animates a smoke texture to represent the destruction of the drone
+        glPushMatrix();
+        vector<Vector3D> verts({Vector3D(1,-1,0), Vector3D(1,1,0), Vector3D(-1,1,0), Vector3D(-1,-1,0)});
+        Polygon smoke;
+        smoke.verts = verts;
+        float animPercent = timeSinceDestroyed/1000;
+        glColor4f(1.0, 1.0, 1.0, 1 - animPercent);
+        glScalef(0.3 + animPercent*4, 0.3 + animPercent*5, 0.3 + animPercent*4);
+        glScalef(3, 2, 3);
+        smoke.draw(3000, stCoordinates, true);
+        glPopMatrix();
+        
+        // Flings the destroyed cockpit
+        float speed = 15;
+        float x = timeSinceDestroyed * scaleFactor * speed;
+        float y = -0.1 * pow(x - scaleFactor*3000, 2) + 0.1 * pow(scaleFactor*3000, 2);
+        glTranslatef(x, y, 0);
+    }
+    glScalef(1.3, 1.2, 1.3);
+    prism.draw(2001, stCoordinates, true, 2001);
     glTranslatef(0.0, 0.6, 0.0);
     glScalef(0.75, 0.75, 0.75);
-    cube.draw();
-    //glutSolidCube(1.0); //cube cockpit
+    prism.draw(2001, stCoordinates, true, 2001);
     glTranslatef(0.0, 0.0, 0.5);
     glScalef(0.4, 0.4, 0.6);
-    cube.draw();
-    //glutSolidSphere(1.0, 20.0, 20.0); //spherical cockpit window
+    prism.draw(2001, stCoordinates, true, 2001);
     glPopMatrix();
 }
 
 
 void Drone::updateDrone()
 {
-    if(!isDestroyed){
+    if(!isDestroyed)
+    {
         forwardSpeed = 0;
         rightSpeed = 0;
         
@@ -237,13 +264,20 @@ void Drone::destroy()
 {
     isDestroyed = true;
     timeDestroyed = glutGet(GLUT_ELAPSED_TIME);
+    
+    //Set random rotation scales for each arm for use in the destroy animation
+    for(int i = 0; i < arms.size(); i++){
+        float rotX = ((rand() % 60) - 30)/10.0; //between -3 and +3
+        float rotY = ((rand() % 6) + 7)/10.0; //between 0.7 and 1.3
+        float rotZ = ((rand() % 60) - 30)/10.0; //between -3 and +3
+        arms.at(i).destroyRotations = Vector3D(rotX, rotY, rotZ);
+    }
 }
 
 void Drone::respawn()
 {
-    Vector3D respawnPoint(0.0, 3.0, 5.0);
     isDestroyed = false;
-    position = respawnPoint;
+    position = spawnPoint;
 }
 
 

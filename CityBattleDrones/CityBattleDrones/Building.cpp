@@ -318,6 +318,7 @@ void Building::changeScaleFactors(Vector3D scaleDeltas)
     }
     
     currentHeight = initialHeight * scaleFactors.y;
+    position.y = currentHeight/2;
     build();
 }
 
@@ -382,7 +383,6 @@ string Building::getMetaData()
 void Building::processMetaData(string md)
 {
     istringstream iss(md);
-    floorHeight = 0.8;
     
     int i = 0;
     for (string line; getline(iss, line);)
@@ -420,7 +420,7 @@ void Building::processMetaData(string md)
                 stringstream s1(tokens[0]);
                 s1 >> position.x;
                 stringstream s2(tokens[1]);
-                s2 >> position.y;
+                //s2 >> position.y;
                 stringstream s3(tokens[2]);
                 s3 >> position.z;
             }
@@ -449,6 +449,10 @@ void Building::processMetaData(string md)
         }
         i++;
     }
+    
+    floorHeight = 0.8;
+    position.y = currentHeight/2;
+    
     build();
 }
 

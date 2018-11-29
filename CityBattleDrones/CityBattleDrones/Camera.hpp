@@ -14,8 +14,10 @@
 
 #define PI 3.14159265
 #define DEGTORAD (PI / 180.0)
+#define DEFAULT_ZOOM 0.5
 
 #include <iostream>
+
 using namespace std;
 
 
@@ -34,7 +36,7 @@ class Camera
     bool clickAndDrag;
     const float minElevation = 5;
     const float maxElevation = 85;
-    const float minZoomDistance = 0.001;
+    const float minZoomDistance = 0.01;
     const float maxZoomDistance = 20;
     Vector3D position;
     Vector3D focus;

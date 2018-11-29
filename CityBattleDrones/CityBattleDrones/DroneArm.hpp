@@ -22,7 +22,7 @@
 
 // Material properties
 static GLfloat arm_mat_ambient[] = { 0.4F, 0.2F, 0.05F, 1.0F };
-static GLfloat arm_mat_specular[] = { 0.3F, 0.3F, 0.1F, 1.0F };
+static GLfloat arm_mat_specular[] = { 0.6F, 0.6F, 0.4F, 1.0F };
 static GLfloat arm_mat_diffuse[] = { 0.1F, 0.1F, 0.8F, 0.0F };
 static GLfloat arm_mat_shininess[] = { 0.8F };
 
@@ -39,10 +39,11 @@ private:
     GLfloat propBaseRadius;
     int numPropBlades;
     Propeller propeller;
-    PrismMesh cube;
-    
+    PrismMesh prism;
     
 public:
+    
+    Vector3D destroyRotations;
     
     DroneArm();
     DroneArm(GLfloat armLength, GLfloat armWidth, GLfloat propBaseScaleY, int numPropBlades);

@@ -12,7 +12,8 @@ DroneArm::DroneArm():
     propBaseRadius(armWidth*0.5),
     numPropBlades(2),
     propeller(Propeller(armLength/2, numPropBlades)),
-    cube(PrismMesh())
+    prism(PrismMesh(20)),
+    destroyRotations(Vector3D(0,0,0))
 {}
     
 DroneArm::DroneArm(GLfloat armLength, GLfloat armWidth, GLfloat propBaseScaleY, int numPropBlades):
@@ -22,7 +23,8 @@ DroneArm::DroneArm(GLfloat armLength, GLfloat armWidth, GLfloat propBaseScaleY, 
     propBaseRadius(armWidth*0.5),
     numPropBlades(numPropBlades),
     propeller(Propeller(armLength/2, numPropBlades)),
-    cube(PrismMesh())
+    prism(PrismMesh(20)),
+    destroyRotations(Vector3D(0,0,0))
 {}
 
 // Draws the drone arm
@@ -41,14 +43,14 @@ void DroneArm::draw(){
     glTranslatef(armLength/2, 0.0, 0.0);
     glScalef(armLength, armWidth, armWidth);
     glRotatef(90, 0, 0, 1);
-    cube.draw(2001, stCoordinates, false, 0);
+    prism.draw(2001, stCoordinates, true, 2001);
     glPopMatrix();
         
     //draws propeller base
     glPushMatrix();
     glTranslatef(armLength, 0.0, 0.0);
     glScalef(propBaseRadius*2, propBaseRadius*2*propBaseScaleY, propBaseRadius*2);
-    cube.draw(2001, stCoordinates, false, 0);
+    prism.draw(2001, stCoordinates, true, 2001);
     glPopMatrix();
     
     //Draws the propeller
