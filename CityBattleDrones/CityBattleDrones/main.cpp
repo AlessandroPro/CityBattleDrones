@@ -18,6 +18,7 @@
 #include "DroneAI.hpp"
 #include "Camera.hpp"
 #include "Building.hpp"
+#include "Street.hpp"
 #include "Missile.hpp"
 #include <iostream>
 #include <fstream>
@@ -45,12 +46,22 @@ Vector3D enemySpawnPoint(0.0, 3.0, 4.0);
 Drone dronePlayer(0.02, 6, 2, playerSpawnPoint, 20);
 DroneAI droneEnemy(0.02, 6, 2, enemySpawnPoint, 20);
 
+//DroneAI droneEnemy2(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy3(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy4(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy5(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy6(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy7(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy8(0.02, 6, 2, enemySpawnPoint, 20);
+//DroneAI droneEnemy9(0.02, 6, 2, enemySpawnPoint, 20);
+
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
 static vector<Building*> buildings;                //array of buildings
+static vector<Street*> streets;                //array of streets
 static vector<int> buildingTextures;
 static vector<int> roofTextures;
-static string CityMetaDataFile = "CityMetaData.txt";
+static string CityMetaDataFile = "CityMetaData3.txt";
 static Polygon ground;
 static PrismMesh skybox;
 
@@ -65,16 +76,22 @@ static GLfloat light_specular[] = { 1.0, 1.0, 0.8, 1.0 };
 static GLfloat light_ambient[] = { 0.99F, 0.99F, 0.99F, 1.0F };
 
 // Material properties for the ground blocks
-static GLfloat block_mat_ambient[] = { 0.3F, 0.2F, 0.05F, 1.0F };
+static GLfloat block_mat_ambient[] = { 0.34F, 0.2F, 0.05F, 1.0F };
 static GLfloat block_mat_specular[] = { 0.4F, 0.2F, 0.4F, 1.0F };
 static GLfloat block_mat_diffuse[] = { 0.6F, 0.9F, 0.9F, 0.0F };
 static GLfloat block_mat_shininess[] = { 0.8F };
 
 // Ground material properties
-static GLfloat ground_ambient[] = { 0.3F, 0.2F, 0.1F, 1.0F };
-static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 0.1F };
+static GLfloat ground_ambient[] = { 0.35F, 0.2F, 0.1F, 1.0F };
+static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 1.0F };
 static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.4F, 1.0F };
 static GLfloat ground_shininess[] = { 0.1F };
+
+// Street material properties
+static GLfloat street_ambient[] = { 0.4F, 0.3F, 0.1F, 1.0F };
+static GLfloat street_specular[] = { 0.1F, 0.1F, 0.1F, 1.0F };
+static GLfloat street_diffuse[] = { 0.3F, 0.3F, 0.3F, 0.0F };
+static GLfloat street_shininess[] = { 0.1F };
 
 // Skybox texture grid s&t coordinates (5x4 grid lines)
 // Example: st12 represents the intersection of vertical line 1 and horizontal line 2
@@ -176,7 +193,7 @@ void initOpenGL(int w, int h)
     
     
     //Load textures
-    texFiles.push_back("cityGround1.bmp");  //2000
+    texFiles.push_back("ground2.bmp");  //2000
     
     texFiles.push_back("steelGradient.bmp");    //2001
     
@@ -199,14 +216,16 @@ void initOpenGL(int w, int h)
     texFiles.push_back("smoke1.png");       //2015
     texFiles.push_back("smoke2.png");       //2016
     
+    texFiles.push_back("street.bmp");       //2017
+    
     loadTextures(texFiles);
     
     skybox.changeScaleFactors(Vector3D(worldSize, worldSize, worldSize));
     
-    ground.verts.push_back(Vector3D(groundLength/2, 0.0, -groundWidth/2));
-    ground.verts.push_back(Vector3D(groundLength/2, 0.0, groundWidth/2));
-    ground.verts.push_back(Vector3D(-groundLength/2, 0.0, groundWidth/2));
-    ground.verts.push_back(Vector3D(-groundLength/2, 0.0, -groundWidth/2));
+    ground.verts.push_back(Vector3D(groundLength/2, -0.1, -groundWidth/2));
+    ground.verts.push_back(Vector3D(groundLength/2, -0.1, groundWidth/2));
+    ground.verts.push_back(Vector3D(-groundLength/2, -0.1, groundWidth/2));
+    ground.verts.push_back(Vector3D(-groundLength/2, -0.1, -groundWidth/2));
     ground.calculateNormal();
 }
 
@@ -241,6 +260,24 @@ void display(void)
     }
     
     droneEnemy.makeDecisions(dronePlayer.getPosition());
+    
+//    droneEnemy2.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy3.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy4.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy5.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy6.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy7.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy8.makeDecisions(dronePlayer.getPosition());
+//    droneEnemy9.makeDecisions(dronePlayer.getPosition());
+//
+//    droneEnemy2.updateDrone();
+//    droneEnemy3.updateDrone();
+//    droneEnemy4.updateDrone();
+//    droneEnemy5.updateDrone();
+//    droneEnemy6.updateDrone();
+//    droneEnemy7.updateDrone();
+//    droneEnemy8.updateDrone();
+//    droneEnemy9.updateDrone();
     
     handleCollisions();
     
@@ -282,6 +319,17 @@ void display(void)
     //Draw ground quad
     ground.draw(2000, stCoordinates, false);
     
+    // Set material properties of the streets
+    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
+    
+    for(int i = 0; i < streets.size(); i++)
+    {
+        streets[i]->draw(2017);
+    }
+    
     // Set ground block material properties
     glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
     glMaterialfv(GL_FRONT, GL_SPECULAR, block_mat_specular);
@@ -303,6 +351,15 @@ void display(void)
     
     droneEnemy.draw();
     dronePlayer.draw();
+    
+//    droneEnemy2.draw();
+//    droneEnemy3.draw();
+//    droneEnemy4.draw();
+//    droneEnemy5.draw();
+//    droneEnemy6.draw();
+//    droneEnemy7.draw();
+//    droneEnemy8.draw();
+//    droneEnemy9.draw();
     
     glutSwapBuffers();   // Double buffering, swap buffers
 }
@@ -504,11 +561,13 @@ void printControls()
     std::cout << controls;
 };
 
+
 void loadCity(string filename)
 {
     string line;
     string metaData;
     vector<Building*> loadedBuildings;
+    vector<Street*> loadedStreets;
     ifstream myfile (filename);
     if (myfile.is_open())
     {
@@ -524,11 +583,28 @@ void loadCity(string filename)
                 loadedBuildings.push_back(bd);
                 metaData = "";
             }
-            else if(!line.compare("END_LIST"))
+            else if(!line.compare("END_BUILDING_LIST"))
             {
                 if(loadedBuildings.size() > 0)
                 {
                     loadedBuildings.at(loadedBuildings.size() - 1)->processMetaData(metaData);
+                }
+            }
+            else if(!line.compare("+++++"))
+            {
+                if(loadedStreets.size() > 0)
+                {
+                    loadedStreets.at(loadedStreets.size() - 1)->processMetaData(metaData);
+                }
+                Street* bd = new Street();
+                loadedStreets.push_back(bd);
+                metaData = "";
+            }
+            else if(!line.compare("END_STREET_LIST"))
+            {
+                if(loadedStreets.size() > 0)
+                {
+                    loadedStreets.at(loadedStreets.size() - 1)->processMetaData(metaData);
                 }
             }
             else
@@ -536,6 +612,7 @@ void loadCity(string filename)
                 metaData += line + "\n";
             }
         }
+        
         for (auto& bld : loadedBuildings)
         {
             buildings.push_back(bld);
@@ -544,6 +621,12 @@ void loadCity(string filename)
             randIndex = rand() % 3;
             roofTextures.push_back(randIndex);
         }
+        for (auto& strt : loadedStreets)
+        {
+            streets.push_back(strt);
+        }
+        
+        
         glutPostRedisplay();
         myfile.close();
     }

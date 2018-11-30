@@ -55,7 +55,6 @@ void DroneAI::moveToward(Vector3D pos)
     
     if(pos.y > position.y + scaleFactor*5 && chance < 0.3)
     {
-        cout << distance << "\n";
         setAction(0, true);
         setAction(1, false);
     }
@@ -96,15 +95,15 @@ void DroneAI::moveToward(Vector3D pos)
 void DroneAI::decideToLaunch(Vector3D pos)
 {
     float distance = Vector3D::subtract(pos, position).getLength();
-    float chance = (rand() % 100)/100.0;
+    float chance = (rand() % 120)/100.0;
     
-    if(distance < 1)
+    if(distance < 0.5)
     {
         launchMissile();
     }
     // The farther the enemy drone is from the player, the less
     // likely it is to shoot;
-    else if(chance < 1/distance)
+    else if(chance < 0.5/distance)
     {
         launchMissile();
     }

@@ -10,7 +10,7 @@
 
 Building::Building():
     PrismMesh(),
-    floorHeight(0.03),
+    floorHeight(0.08),
     selectedSplineCP(-1),
     selectedBaseCP(-1)
     {
@@ -390,7 +390,7 @@ void Building::processMetaData(string md)
         if(i == 0) s >> numBaseEdges;
         else if(i == 1) s >> initialHeight;
         else if(i == 2) s >> currentHeight;
-        //else if(i == 3) s >> floorHeight;
+        else if(i == 3) s >> floorHeight;
         else if(i == 4) s >> rotationY;
         else if(i >= 5 && i <= 8)
         {
@@ -448,8 +448,6 @@ void Building::processMetaData(string md)
         }
         i++;
     }
-    
-    floorHeight = 0.8;
     position.y = currentHeight/2;
     
     build();

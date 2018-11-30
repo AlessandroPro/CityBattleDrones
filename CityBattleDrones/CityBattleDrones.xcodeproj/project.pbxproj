@@ -24,6 +24,7 @@
 		E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897321AF562E00FECB69 /* Stb_image.cpp */; };
 		E84F897A21B04D5200FECB69 /* Missile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897821B04D5200FECB69 /* Missile.cpp */; };
 		E88D5E1E21B0D8C00068214D /* DroneAI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88D5E1C21B0D8C00068214D /* DroneAI.cpp */; };
+		E88D5E2421B1C4140068214D /* Street.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88D5E2221B1C4140068214D /* Street.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -104,6 +105,13 @@
 		E88D5E1B21B0D2950068214D /* smoke2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smoke2.png; sourceTree = "<group>"; };
 		E88D5E1C21B0D8C00068214D /* DroneAI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DroneAI.cpp; sourceTree = "<group>"; };
 		E88D5E1D21B0D8C00068214D /* DroneAI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DroneAI.hpp; sourceTree = "<group>"; };
+		E88D5E2221B1C4140068214D /* Street.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Street.cpp; sourceTree = "<group>"; };
+		E88D5E2321B1C4140068214D /* Street.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Street.hpp; sourceTree = "<group>"; };
+		E88D5E2521B1C4CB0068214D /* CityMetaData1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CityMetaData1.txt; sourceTree = "<group>"; };
+		E88D5E2621B1D5890068214D /* CityMetaData2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CityMetaData2.txt; sourceTree = "<group>"; };
+		E88D5E2721B1D95D0068214D /* CityMetaData3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CityMetaData3.txt; sourceTree = "<group>"; };
+		E88D5E2A21B1EC580068214D /* street.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = street.bmp; sourceTree = "<group>"; };
+		E88D5E2B21B1EFB50068214D /* ground2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ground2.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,7 +174,14 @@
 				E84F895021A781AF00FECB69 /* Spline.cpp */,
 				E84F894E21A780F600FECB69 /* Building.hpp */,
 				E84F894D21A780F600FECB69 /* Building.cpp */,
+				E88D5E2221B1C4140068214D /* Street.cpp */,
+				E88D5E2321B1C4140068214D /* Street.hpp */,
+				E88D5E2B21B1EFB50068214D /* ground2.bmp */,
 				E84F895221A7851600FECB69 /* CityMetaData.txt */,
+				E88D5E2521B1C4CB0068214D /* CityMetaData1.txt */,
+				E88D5E2621B1D5890068214D /* CityMetaData2.txt */,
+				E88D5E2721B1D95D0068214D /* CityMetaData3.txt */,
+				E88D5E2A21B1EC580068214D /* street.bmp */,
 				E84F897621AF767F00FECB69 /* circle.png */,
 				E82270B921B0C3FC0037E2B8 /* missileTex1.bmp */,
 				E84F897721AFAB1E00FECB69 /* smoke1.png */,
@@ -272,6 +287,7 @@
 			files = (
 				E84F897A21B04D5200FECB69 /* Missile.cpp in Sources */,
 				E84F8924219F91AF00FECB69 /* main.cpp in Sources */,
+				E88D5E2421B1C4140068214D /* Street.cpp in Sources */,
 				E84F893521A0A92900FECB69 /* Polygon.cpp in Sources */,
 				E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */,
 				E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */,
