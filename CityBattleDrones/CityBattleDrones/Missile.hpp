@@ -34,11 +34,19 @@ class Missile
     
 public:
     
+    bool isDestroyed;
+    float timeDestroyed;
+    
     Missile();
     Missile(float scaleFactor, float speed, Vector3D position, Vector3D forward, Vector3D targetPos, int bodyTex, int headTex);
     void moveForward(float speed);
     void alignRotation(Vector3D direction);
     void changeForward(Vector3D targetPos, float changeDelta);
+    Vector3D getPosition();
+    void setPosition(Vector3D newPos);
+    void setForward(Vector3D newForward);
+    void setTargetPos(Vector3D newTargetPos);
+    void blowUp();
     void update();
     void draw();
 };

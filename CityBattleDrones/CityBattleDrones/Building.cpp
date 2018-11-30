@@ -322,15 +322,15 @@ void Building::changeScaleFactors(Vector3D scaleDeltas)
     build();
 }
 
-bool Building::checkDroneCollision(Vector3D dronePos)
+bool Building::checkObjectCollision(Vector3D objectPos)
 {
-    if(dronePos.y > currentHeight || dronePos.y < 0)
+    if(objectPos.y > currentHeight || objectPos.y < 0)
     {
         return false;
     }
     // The floor height of the drone
     // (example: drone could be 4.6 floor heights from the ground)
-    float droneFloor = dronePos.y/floorHeight;
+    float droneFloor = objectPos.y/floorHeight;
     
     // The scale factors of the floor level below and above the drone
     float floorBelowScale = verticalSpline(floor(droneFloor));
@@ -342,12 +342,11 @@ bool Building::checkDroneCollision(Vector3D dronePos)
     float collisionRadius = (initialHeight/2)*lerpScale*scaleFactors.x;
     
     //distance between the drone' position and building's position in the XZ plane
-    Vector2D distanceVec(position.x - dronePos.x, position.z - dronePos.z);
+    Vector2D distanceVec(position.x - objectPos.x, position.z - objectPos.z);
     float distance = distanceVec.getLength();
     
     if(distance < collisionRadius)
     {
-        cout << "Floor: " << droneFloor << "\n";
         return true;
     }
     else

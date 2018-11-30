@@ -52,7 +52,7 @@ public:
     void selectBaseControlPoint(int cpIndex);
     void shiftSelectedBaseControlPoint(float wvX, float wvY);
     void changeBaseControlPoint(int cpIndex, float newScale);
-    bool checkDroneCollision(Vector3D dronePos);
+    bool checkObjectCollision(Vector3D ObjectPos);
     string getMetaData();
     void processMetaData(string md);
 };

@@ -23,6 +23,7 @@
 		E84F895621A8898000FECB69 /* Vector2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F895421A8898000FECB69 /* Vector2D.cpp */; };
 		E84F897421AF562E00FECB69 /* Stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897321AF562E00FECB69 /* Stb_image.cpp */; };
 		E84F897A21B04D5200FECB69 /* Missile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E84F897821B04D5200FECB69 /* Missile.cpp */; };
+		E88D5E1E21B0D8C00068214D /* DroneAI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88D5E1C21B0D8C00068214D /* DroneAI.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E82270B921B0C3FC0037E2B8 /* missileTex1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = missileTex1.bmp; sourceTree = "<group>"; };
 		E84F8902219F90DD00FECB69 /* CityBattleDrones */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CityBattleDrones; sourceTree = BUILT_PRODUCTS_DIR; };
 		E84F890D219F914C00FECB69 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		E84F890F219F915200FECB69 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
@@ -99,6 +101,9 @@
 		E84F897721AFAB1E00FECB69 /* smoke1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smoke1.png; sourceTree = "<group>"; };
 		E84F897821B04D5200FECB69 /* Missile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Missile.cpp; sourceTree = "<group>"; };
 		E84F897921B04D5200FECB69 /* Missile.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Missile.hpp; sourceTree = "<group>"; };
+		E88D5E1B21B0D2950068214D /* smoke2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smoke2.png; sourceTree = "<group>"; };
+		E88D5E1C21B0D8C00068214D /* DroneAI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DroneAI.cpp; sourceTree = "<group>"; };
+		E88D5E1D21B0D8C00068214D /* DroneAI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DroneAI.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +144,8 @@
 				E84F897921B04D5200FECB69 /* Missile.hpp */,
 				E84F8916219F91AE00FECB69 /* Drone.cpp */,
 				E84F8914219F91AE00FECB69 /* Drone.hpp */,
+				E88D5E1C21B0D8C00068214D /* DroneAI.cpp */,
+				E88D5E1D21B0D8C00068214D /* DroneAI.hpp */,
 				E84F8913219F91AE00FECB69 /* DroneArm.cpp */,
 				E84F891C219F91AF00FECB69 /* DroneArm.hpp */,
 				E84F891B219F91AF00FECB69 /* main.cpp */,
@@ -161,8 +168,10 @@
 				E84F894D21A780F600FECB69 /* Building.cpp */,
 				E84F895221A7851600FECB69 /* CityMetaData.txt */,
 				E84F897621AF767F00FECB69 /* circle.png */,
+				E82270B921B0C3FC0037E2B8 /* missileTex1.bmp */,
 				E84F897721AFAB1E00FECB69 /* smoke1.png */,
 				E84F893D21A2620700FECB69 /* steel.bmp */,
+				E88D5E1B21B0D2950068214D /* smoke2.png */,
 				E84F897521AF628000FECB69 /* banner.png */,
 				E84F896D21A91C5400FECB69 /* pride.bmp */,
 				E84F896F21AE407700FECB69 /* steelGradient.bmp */,
@@ -273,6 +282,7 @@
 				E84F893821A0C5C000FECB69 /* Camera.cpp in Sources */,
 				E84F8921219F91AF00FECB69 /* DroneArm.cpp in Sources */,
 				E84F893421A0A92900FECB69 /* PrismMesh.cpp in Sources */,
+				E88D5E1E21B0D8C00068214D /* DroneAI.cpp in Sources */,
 				E84F892F21A09FC300FECB69 /* Vector3D.cpp in Sources */,
 				E84F893B21A0D6E900FECB69 /* TextureUtils.cpp in Sources */,
 			);

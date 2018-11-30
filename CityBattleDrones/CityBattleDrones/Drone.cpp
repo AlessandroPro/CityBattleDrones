@@ -22,12 +22,18 @@ Drone::Drone():
     controlActions{false, false, false, false, false, false, false, false},
     propsSpinning(false),
     isDestroyed(false),
-    timeDestroyed(0)
+    timeDestroyed(0),
+    maxNumMissiles(5)
 {
     createArms(3.0, 0.5);
+    for(int i = 0; i < maxNumMissiles; i++)
+    {
+        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,0,0), 2014, 2013);
+        missiles.push_back(missile);
+    }
 }
 
-Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spawnPoint):
+Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spawnPoint, int maxNumMissiles):
     scaleFactor(scaleFactor),
     numArms(numArms),
     numPropBlades(numPropBlades),
@@ -43,9 +49,15 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spaw
     controlActions{false, false, false, false, false, false, false, false},
     propsSpinning(false),
     isDestroyed(false),
-    timeDestroyed(0)
+    timeDestroyed(0),
+    maxNumMissiles(maxNumMissiles)
 {
     createArms(3.0, 0.5);
+    for(int i = 0; i < maxNumMissiles; i++)
+    {
+        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,3,5), 2014, 2013);
+        missiles.push_back(missile);
+    }
 }
 
 void Drone::draw()
@@ -207,7 +219,7 @@ void Drone::drawCockpit()
         glColor4f(1.0, 1.0, 1.0, 1 - animPercent);
         glScalef(0.3 + animPercent*4, 0.3 + animPercent*5, 0.3 + animPercent*4);
         glScalef(3, 2, 3);
-        smoke.draw(3000, stCoordinates, true);
+        smoke.draw(2015, stCoordinates, true);
         glPopMatrix();
         
         // Flings the destroyed cockpit
@@ -293,8 +305,18 @@ void Drone::respawn()
 
 void Drone::launchMissile()
 {
-    Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,3,5), 2001, 2001);
-    missiles.push_back(missile);
+    for(int i = 0; i < missiles.size(); i++)
+    {
+        if(missiles[i].isDestroyed)
+        {
+            missiles[i].setPosition(position);
+            missiles[i].setForward(forward);
+            missiles[i].isDestroyed = false;
+            break;
+        }
+    }
 }
+
+
 
 

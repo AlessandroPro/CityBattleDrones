@@ -15,6 +15,7 @@
 #include "PrismMesh.hpp"
 #include "TextureUtils.hpp"
 #include "Drone.hpp"
+#include "DroneAI.hpp"
 #include "Camera.hpp"
 #include "Building.hpp"
 #include "Missile.hpp"
@@ -36,13 +37,13 @@ const int groundWidth = 36;          // Default ground height 100 meters/unit
 const int worldSize = 150;            // Size of the world, used for the skybox
 
 //Initialize a drone object
-Vector3D playerSpawnPoint(0.0, 3.0, 5.0);
-Vector3D enemySpawnPoint(0.0, 3.0, 6.0);
+Vector3D playerSpawnPoint(0.0, 3.0, -3.0);
+Vector3D enemySpawnPoint(0.0, 3.0, 4.0);
 // Creates a drone with a scaleFactor of 1.0;
 // with 5 arms and 2 propeller blades per arm;
 // positioned at spawnPoint
-Drone dronePlayer(0.02, 6, 2, playerSpawnPoint);
-Drone droneEnemy(0.02, 6, 2, enemySpawnPoint);
+Drone dronePlayer(0.02, 6, 2, playerSpawnPoint, 20);
+DroneAI droneEnemy(0.02, 6, 2, enemySpawnPoint, 20);
 
 static Camera camera;          //Camera for the scene
 static int currentButton;      //Current mouse button being pressed
@@ -54,8 +55,8 @@ static Polygon ground;
 static PrismMesh skybox;
 
 //Textures
-static std::vector<string> texFiles; //array of texture filenames
-static std::vector<RGBpixmap*> pm;  //array of pointers to pixelmaps for each texture file
+static std::vector<char const*> texFiles; //array of texture filenames
+//static std::vector<RGBpixmap*> pm;  //array of pointers to pixelmaps for each texture file
 
 // Light properties
 static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
@@ -119,7 +120,9 @@ void mouseButtonHandler(int button, int state, int xMouse, int yMouse);
 void mouseMotionHandler(int xMouse, int yMouse);
 void printControls();
 void loadCity(string filename);
-void loadTexture(vector<string> texFiles);
+void loadTextures(vector<char const*> texFiles);
+void handleCollisions();
+bool checkOutOfBounds(Vector3D point);
 
 int main(int argc, char **argv)
 {
@@ -173,28 +176,30 @@ void initOpenGL(int w, int h)
     
     
     //Load textures
-    texFiles.push_back(string("cityGround1.bmp"));  //2000
+    texFiles.push_back("cityGround1.bmp");  //2000
     
-    texFiles.push_back(string("steelGradient.bmp"));    //2001
+    texFiles.push_back("steelGradient.bmp");    //2001
     
-    texFiles.push_back(string("skybox1.bmp"));      //2002
-    texFiles.push_back(string("skybox2.bmp"));      //2003
-    texFiles.push_back(string("skybox3.bmp"));      //2004
+    texFiles.push_back("skybox1.bmp");      //2002
+    texFiles.push_back("skybox2.bmp");      //2003
+    texFiles.push_back("skybox3.bmp");      //2004
     
-    texFiles.push_back(string("floorTex2.bmp"));    //2005
-    texFiles.push_back(string("floorTex3.bmp"));    //2006
-    texFiles.push_back(string("floorTex4.bmp"));    //2007
-    texFiles.push_back(string("floorTex5.bmp"));    //2008
-    texFiles.push_back(string("floorTex6.bmp"));    //2009
+    texFiles.push_back(("floorTex2.bmp"));    //2005
+    texFiles.push_back("floorTex3.bmp");    //2006
+    texFiles.push_back("floorTex4.bmp");    //2007
+    texFiles.push_back("floorTex5.bmp");    //2008
+    texFiles.push_back("floorTex6.bmp");    //2009
     
-    texFiles.push_back(string("roofTex1.bmp"));    //2010
-    texFiles.push_back(string("roofTex2.bmp"));    //2011
-    texFiles.push_back(string("roofTex3.bmp"));    //2012
-    texFiles.push_back(string("pride.bmp"));       //2013
+    texFiles.push_back("roofTex1.bmp");    //2010
+    texFiles.push_back("roofTex2.bmp");    //2011
+    texFiles.push_back("roofTex3.bmp");    //2012
+    texFiles.push_back("redMetal2.bmp");       //2013
     
-    pm = TextureUtils::loadTextures(texFiles);
+    texFiles.push_back("missileTex1.bmp"); //2014
+    texFiles.push_back("smoke1.png");       //2015
+    texFiles.push_back("smoke2.png");       //2016
     
-    loadTexture(texFiles);
+    loadTextures(texFiles);
     
     skybox.changeScaleFactors(Vector3D(worldSize, worldSize, worldSize));
     
@@ -203,9 +208,6 @@ void initOpenGL(int w, int h)
     ground.verts.push_back(Vector3D(-groundLength/2, 0.0, groundWidth/2));
     ground.verts.push_back(Vector3D(-groundLength/2, 0.0, -groundWidth/2));
     ground.calculateNormal();
-    
-    
-    // stb_image loader
 }
 
 
@@ -227,14 +229,20 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    for(int i = 0; i < buildings.size(); i++)
+    
+    for(int j = 0; j < dronePlayer.missiles.size(); j++)
     {
-        if(buildings[i]->checkDroneCollision(dronePlayer.getPosition()) && !dronePlayer.isDestroyed)
-        {
-            dronePlayer.destroy();
-            break;
-        }
+        dronePlayer.missiles[j].setTargetPos(droneEnemy.getPosition());
     }
+    
+    for(int j = 0; j < droneEnemy.missiles.size(); j++)
+    {
+        droneEnemy.missiles[j].setTargetPos(dronePlayer.getPosition());
+    }
+    
+    droneEnemy.makeDecisions(dronePlayer.getPosition());
+    
+    handleCollisions();
     
     // Zoom the camera out when the dronePlayer is destroyed
 //    if(dronePlayer.isDestroyed)
@@ -255,6 +263,7 @@ void display(void)
 
     dronePlayer.updateDrone();
     droneEnemy.updateDrone();
+    
     camera.changeFocus(dronePlayer.getPosition());
     camera.setAzimuth(180 + dronePlayer.getRotationY());
     camera.update();
@@ -294,12 +303,6 @@ void display(void)
     
     droneEnemy.draw();
     dronePlayer.draw();
-    float distanceBetweenDrones = Vector3D::subtract(droneEnemy.getPosition(), dronePlayer.getPosition()).getLength();
-    if(distanceBetweenDrones < 0.04 && !dronePlayer.isDestroyed)
-    {
-        droneEnemy.destroy();
-        dronePlayer.destroy();
-    }
     
     glutSwapBuffers();   // Double buffering, swap buffers
 }
@@ -324,6 +327,7 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'f':
             glutFullScreen();
+            break;
         case 'w':
             dronePlayer.setAction(2, true);
             break;
@@ -342,8 +346,11 @@ void keyboard(unsigned char key, int x, int y)
         case 'x':
             droneEnemy.destroy();
             break;
-        case 'c':
+        case ' ':
             dronePlayer.launchMissile();
+            break;
+        case 'c':
+            droneEnemy.launchMissile();
             break;
         case 'i':
         {
@@ -397,19 +404,15 @@ void functionKeys(int key, int x, int y)
 {
     if (key == GLUT_KEY_DOWN)
     {
-        //dronePlayer.changeElevation(-0.5);
         dronePlayer.setAction(1, true);
     }
     else if (key == GLUT_KEY_UP){
-        //dronePlayer.changeElevation(0.5);
         dronePlayer.setAction(0, true);
     }
     else if (key == GLUT_KEY_LEFT){
-        //dronePlayer.changeDirection(5.0);
         dronePlayer.setAction(4, true);
     }
     else if (key == GLUT_KEY_RIGHT){
-        //dronePlayer.changeDirection(-5.0);
         dronePlayer.setAction(5, true);
     }
     glutPostRedisplay();   // Trigger a window redisplay
@@ -547,15 +550,15 @@ void loadCity(string filename)
     else cout << "Unable to open file";
 }
 
-void loadTexture(vector<string> texFiles)
+void loadTextures(vector<char const*> texFiles)
 {
-    //for(int i = 0; i < texFiles.size(); i++)
-    //{
+    for(int i = 0; i < texFiles.size(); i++)
+    {
         int x,y,n;
-        char const* filename = "smoke1.png";
+        char const* filename = texFiles[i];
         unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
     
-        glBindTexture(GL_TEXTURE_2D, 3000);
+        glBindTexture(GL_TEXTURE_2D, 2000 + i);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         if (n == 3)
@@ -571,7 +574,120 @@ void loadTexture(vector<string> texFiles)
         // ... replace '0' with '1'..'4' to force that many components per pixel
         // ... but 'n' will always be the number that it would have been if you said 0
         //stbi_image_free(data);
-    //}
+    }
+}
+
+void handleCollisions()
+{
+    // Check for drone/missile collisions with the buildings/ground
+    for(int i = 0; i < buildings.size(); i++)
+    {
+        // Check if the dronePlayer collided with a building or the ground
+        bool collideBld = buildings[i]->checkObjectCollision(dronePlayer.getPosition());
+        if(collideBld && !dronePlayer.isDestroyed)
+        {
+            dronePlayer.destroy();
+        }
+        
+        // Check if the droneEnemy collided with a building or the ground
+        collideBld = buildings[i]->checkObjectCollision(droneEnemy.getPosition());
+        if(collideBld && !droneEnemy.isDestroyed)
+        {
+            droneEnemy.destroy();
+        }
+        
+        // Check if one of the dronePlayer's missiles collided with a building or the ground
+        for(int j = 0; j < dronePlayer.missiles.size(); j++)
+        {
+            collideBld = buildings[i]->checkObjectCollision(dronePlayer.missiles[j].getPosition());
+            if(collideBld && !dronePlayer.missiles[j].isDestroyed)
+            {
+                dronePlayer.missiles[j].blowUp();
+            }
+        }
+        
+        // Check if one of the droneEnemy's missiles collided with a building or the ground
+        for(int j = 0; j < droneEnemy.missiles.size(); j++)
+        {
+            collideBld = buildings[i]->checkObjectCollision(droneEnemy.missiles[j].getPosition());
+            if(collideBld && !droneEnemy.missiles[j].isDestroyed)
+            {
+                droneEnemy.missiles[j].blowUp();
+            }
+        }
+        
+    }
+    
+    // Check if one of the dronePlayer's missiles collided with the droneEnemy or world boundary
+    for(int j = 0; j < dronePlayer.missiles.size(); j++)
+    {
+        if(!dronePlayer.missiles[j].isDestroyed && !droneEnemy.isDestroyed)
+        {
+            if(checkOutOfBounds(dronePlayer.missiles[j].getPosition()))
+            {
+                dronePlayer.missiles[j].blowUp();
+                continue;
+            }
+            if(!droneEnemy.isDestroyed)
+            {
+                Vector3D pmPos = dronePlayer.missiles[j].getPosition();
+                Vector3D ePos = droneEnemy.getPosition();
+                float distanceToEnemy = Vector3D::subtract(pmPos, ePos).getLength();
+                if(distanceToEnemy < 0.1)
+                {
+                    droneEnemy.destroy();
+                    dronePlayer.missiles[j].blowUp();
+                }
+            }
+        }
+    }
+    
+    // Check if one of the droneEnemy's missiles collided with the dronePlayer or world boundary
+    for(int j = 0; j < droneEnemy.missiles.size(); j++)
+    {
+        if(!droneEnemy.missiles[j].isDestroyed)
+        {
+            if(checkOutOfBounds(droneEnemy.missiles[j].getPosition()))
+            {
+                droneEnemy.missiles[j].blowUp();
+                continue;
+            }
+            if(!dronePlayer.isDestroyed)
+            {
+                Vector3D emPos = droneEnemy.missiles[j].getPosition();
+                Vector3D pPos = dronePlayer.getPosition();
+                float distanceToPlayer = Vector3D::subtract(emPos, pPos).getLength();
+                if(distanceToPlayer < 0.1)
+                {
+                    //dronePlayer.destroy();
+                    droneEnemy.missiles[j].blowUp();
+                }
+            }
+        }
+    }
+    
+    // Check if the dronePlayer and droneEnemy collide with each other
+    Vector3D ePos = droneEnemy.getPosition();
+    Vector3D pPos = dronePlayer.getPosition();
+    float distanceBetweenDrones = Vector3D::subtract(ePos, pPos).getLength();
+    if(distanceBetweenDrones < 0.1 && !dronePlayer.isDestroyed)
+    {
+        droneEnemy.destroy();
+        dronePlayer.destroy();
+    }
+}
+
+// Returns true if the given point is out of bounds (not within the ground plane area)
+bool checkOutOfBounds(Vector3D point)
+{
+    float halfLength = groundLength/2;
+    float halfWidth = groundWidth/2;
+    if(point.x > halfLength || point.x < -halfLength ||
+       point.z > halfWidth || point.z < -halfWidth)
+    {
+        return true;
+    }
+    return false;
 }
 
 

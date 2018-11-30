@@ -36,7 +36,7 @@ using namespace std;
 // Also includes a variable number of arms, each with a spinnable propeller
 class Drone
 {
-private:
+protected:
     
     GLfloat scaleFactor;
     int numArms;
@@ -51,22 +51,23 @@ private:
     Vector3D tiltAxis;
     PrismMesh prism;
     vector<DroneArm> arms;
-    vector<Missile> missiles;
     //boolean array to keep track of when a control is actioned:
     //move up, move down, move forward, move backward,
     //rotate ccw, rotate cw, move right, move left
     bool controlActions[8];
     const GLfloat bodyScaleY = 0.65;
     const float deltaMove = 0.02;
+    int maxNumMissiles;
     
 public:
     
     bool propsSpinning;
     bool isDestroyed;
     float timeDestroyed;
+    vector<Missile> missiles;
     
     Drone();
-    Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& position);
+    Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& position, int maxNumMissiles);
     void draw();
     void drawArms();
     void createArms(GLfloat armLength, GLfloat armWidth);
