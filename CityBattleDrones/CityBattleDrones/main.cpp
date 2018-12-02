@@ -28,14 +28,25 @@
 #include "Stb_image.cpp"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-const int vWidth = 850;     // Viewport width in pixels
-const int vHeight = 500;    // Viewport height in pixels
-int windowWidth;
-int windowHeight;
+int windowWidth = 900;
+int windowHeight = 500;
 
-const int groundLength = 36;         // Default ground length 100 meters/unit
-const int groundWidth = 36;          // Default ground height 100 meters/unit
+const int groundLength = 36;          // Default ground length 100 meters/unit
+const int groundWidth = 36;           // Default ground height 100 meters/unit
 const int worldSize = 150;            // Size of the world, used for the skybox
+const double tpViewportRatio = 0.7; // Window Width Ratio for the third-person viewport
+
+//Boundaries of the city viewport
+static GLdouble cityViewportX;
+static GLdouble cityViewportY;
+static GLdouble cityViewportWidth;
+static GLdouble cityViewportHeight;
+
+//Boundaries of the first-person viewport
+static GLdouble fpViewportX;
+static GLdouble fpViewportY;
+static GLdouble fpViewportWidth;
+static GLdouble fpViewportHeight;
 
 //Initialize a drone object
 Vector3D playerSpawnPoint(0.0, 3.0, -3.0);
@@ -46,16 +57,9 @@ Vector3D enemySpawnPoint(0.0, 3.0, 4.0);
 Drone dronePlayer(0.02, 6, 2, playerSpawnPoint, 20);
 DroneAI droneEnemy(0.02, 6, 2, enemySpawnPoint, 20);
 
-//DroneAI droneEnemy2(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy3(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy4(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy5(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy6(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy7(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy8(0.02, 6, 2, enemySpawnPoint, 20);
-//DroneAI droneEnemy9(0.02, 6, 2, enemySpawnPoint, 20);
 
-static Camera camera;          //Camera for the scene
+static Camera tpCamera;          //third-person camera for the drone
+static Camera fpCamera;          //first-person camera for the drone
 static int currentButton;      //Current mouse button being pressed
 static vector<Building*> buildings;                //array of buildings
 static vector<Street*> streets;                //array of streets
@@ -71,18 +75,27 @@ static std::vector<char const*> texFiles; //array of texture filenames
 
 // Light properties
 static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
-static GLfloat light_diffuse[] = { 1.0, 1.0, 0.8, 1.0 };
-static GLfloat light_specular[] = { 1.0, 1.0, 0.8, 1.0 };
-static GLfloat light_ambient[] = { 0.99F, 0.99F, 0.99F, 1.0F };
+//static GLfloat light_diffuse[] = { 1.0, 1.0, 0.8, 1.0 };
+//static GLfloat light_specular[] = { 1.0, 1.0, 0.8, 1.0 };
+//static GLfloat light_ambient[] = { 0.99F, 0.99F, 0.99F, 1.0F };
+
+static GLfloat light_diffuse[] = { 0.9, 0.9, 1.0, 1.0 };
+static GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+static GLfloat light_ambient[] = { 0.99F, 0.99F, 1.0F, 0.9F };
 
 // Material properties for the ground blocks
-static GLfloat block_mat_ambient[] = { 0.34F, 0.2F, 0.05F, 1.0F };
-static GLfloat block_mat_specular[] = { 0.4F, 0.2F, 0.4F, 1.0F };
-static GLfloat block_mat_diffuse[] = { 0.6F, 0.9F, 0.9F, 0.0F };
+//static GLfloat block_mat_ambient[] = { 0.34F, 0.2F, 0.05F, 1.0F };
+//static GLfloat block_mat_specular[] = { 0.4F, 0.2F, 0.4F, 1.0F };
+//static GLfloat block_mat_diffuse[] = { 0.6F, 0.9F, 0.9F, 0.0F };
+//static GLfloat block_mat_shininess[] = { 0.8F };
+
+static GLfloat block_mat_ambient[] = { 0.4F, 0.4F, 0.45F, 1.0F };
+static GLfloat block_mat_specular[] = { 0.6F, 0.6F, 0.6F, 1.0F };
+static GLfloat block_mat_diffuse[] = { 0.6F, 0.6F, 0.65F, 1.0F };
 static GLfloat block_mat_shininess[] = { 0.8F };
 
 // Ground material properties
-static GLfloat ground_ambient[] = { 0.35F, 0.2F, 0.1F, 1.0F };
+static GLfloat ground_ambient[] = { 0.6F, 0.6F, 0.6F, 1.0F };
 static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 1.0F };
 static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.4F, 1.0F };
 static GLfloat ground_shininess[] = { 0.1F };
@@ -126,6 +139,7 @@ static vector<vector<Vector2D>> stSkySideCoords = {{st11, st12, st22, st21},
 // Prototypes for functions in this module
 void initOpenGL(int w, int h);
 void display(void);
+void drawAssets();
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 void keyboardUp(unsigned char key, int x, int y);
@@ -146,12 +160,12 @@ int main(int argc, char **argv)
     // Initialize GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(vWidth, vHeight);
+    glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(200, 30);
     glutCreateWindow("Assignment 3 - City Battle Drones");
 
     // Initialize GL
-    initOpenGL(vWidth, vHeight);
+    initOpenGL(windowWidth, windowHeight);
 
     // Register callbacks
     glutDisplayFunc(display);
@@ -191,6 +205,8 @@ void initOpenGL(int w, int h)
     glEnable(GL_NORMALIZE);    // Renormalize normal vectors 
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);   // Nicer perspective
     
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     
     //Load textures
     texFiles.push_back("ground2.bmp");  //2000
@@ -199,7 +215,7 @@ void initOpenGL(int w, int h)
     
     texFiles.push_back("skybox1.bmp");      //2002
     texFiles.push_back("skybox2.bmp");      //2003
-    texFiles.push_back("skybox3.bmp");      //2004
+    texFiles.push_back("skybox4.bmp");      //2004
     
     texFiles.push_back(("floorTex2.bmp"));    //2005
     texFiles.push_back("floorTex3.bmp");    //2006
@@ -222,11 +238,14 @@ void initOpenGL(int w, int h)
     
     skybox.changeScaleFactors(Vector3D(worldSize, worldSize, worldSize));
     
-    ground.verts.push_back(Vector3D(groundLength/2, -0.1, -groundWidth/2));
-    ground.verts.push_back(Vector3D(groundLength/2, -0.1, groundWidth/2));
-    ground.verts.push_back(Vector3D(-groundLength/2, -0.1, groundWidth/2));
     ground.verts.push_back(Vector3D(-groundLength/2, -0.1, -groundWidth/2));
+    ground.verts.push_back(Vector3D(-groundLength/2, -0.1, groundWidth/2));
+    ground.verts.push_back(Vector3D(groundLength/2, -0.1, groundWidth/2));
+    ground.verts.push_back(Vector3D(groundLength/2, -0.1, -groundWidth/2));
     ground.calculateNormal();
+    
+    fpCamera.setMinElevation(185);
+    fpCamera.setMaxElevation(375);
 }
 
 
@@ -235,19 +254,6 @@ void initOpenGL(int w, int h)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-    vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
-    
-    glViewport(0, 0, (GLsizei)windowWidth, (GLsizei)windowHeight);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(60.0, (GLdouble)windowWidth / windowHeight, 0.0005, 400.0);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    
     
     for(int j = 0; j < dronePlayer.missiles.size(); j++)
     {
@@ -261,74 +267,63 @@ void display(void)
     
     droneEnemy.makeDecisions(dronePlayer.getPosition());
     
-//    droneEnemy2.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy3.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy4.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy5.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy6.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy7.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy8.makeDecisions(dronePlayer.getPosition());
-//    droneEnemy9.makeDecisions(dronePlayer.getPosition());
-//
-//    droneEnemy2.updateDrone();
-//    droneEnemy3.updateDrone();
-//    droneEnemy4.updateDrone();
-//    droneEnemy5.updateDrone();
-//    droneEnemy6.updateDrone();
-//    droneEnemy7.updateDrone();
-//    droneEnemy8.updateDrone();
-//    droneEnemy9.updateDrone();
-    
     handleCollisions();
     
-    // Zoom the camera out when the dronePlayer is destroyed
-//    if(dronePlayer.isDestroyed)
-//    {
-//        float timeSinceDestroyed = glutGet(GLUT_ELAPSED_TIME) - dronePlayer.timeDestroyed;
-//        if(timeSinceDestroyed < 1500)
-//        {
-//            camera.setZoomChangeRate(-0.001);
-//            camera.controlActions[2] = true;
-//        }
-//        else
-//        {
-//            camera.controlActions[2] = false;
-//            camera.setZoom(DEFAULT_ZOOM);
-//        }
-//    }
-    
-
     dronePlayer.updateDrone();
     droneEnemy.updateDrone();
     
-    camera.changeFocus(dronePlayer.getPosition());
-    camera.setAzimuth(180 + dronePlayer.getRotationY());
-    camera.update();
+    Vector3D newFocus = dronePlayer.getPosition();
     
-    gluLookAt(camera.position.x, camera.position.y, camera.position.z, camera.focus.x, camera.focus.y, camera.focus.z, 0, 1, 0);
+    tpCamera.changeFocus(newFocus);
+    tpCamera.setAzimuth(180 + dronePlayer.getRotationY());
+    tpCamera.update();
+    
+    fpCamera.changeFocus(Vector3D(newFocus.x, newFocus.y - 0.02, newFocus.z));
+    fpCamera.setAzimuth(180 + dronePlayer.getRotationY());
+    fpCamera.update();
+    
+    glViewport(0, 0, (GLsizei)windowWidth*tpViewportRatio, (GLsizei)windowHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, (GLdouble)(windowWidth*tpViewportRatio / windowHeight), 0.01, 400.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(tpCamera.position.x, tpCamera.position.y, tpCamera.position.z, tpCamera.focus.x, tpCamera.focus.y, tpCamera.focus.z, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
+    drawAssets();
     
+    glViewport(fpViewportX, fpViewportY, (GLsizei)fpViewportWidth, (GLsizei)fpViewportHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, (GLdouble)(fpViewportWidth/fpViewportHeight), 0.01, 400.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(fpCamera.focus.x, fpCamera.focus.y, fpCamera.focus.z, tpCamera.position.x, fpCamera.position.y, fpCamera.position.z, 0, 1, 0);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
-    // Set material properties of the ground
-    glMaterialfv(GL_FRONT, GL_AMBIENT, ground_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, ground_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, ground_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
+    drawAssets();
     
-    //Draw ground quad
-    ground.draw(2000, stCoordinates, false);
+    glViewport(cityViewportX, cityViewportY, (GLsizei)cityViewportWidth, (GLsizei)cityViewportHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, (GLdouble)(cityViewportWidth/cityViewportWidth), 0.01, 400.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(-8, 8, 12, groundWidth/2, 5, 0, 0, 1, 0);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
-    // Set material properties of the streets
-    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
+    //drawAssets();
+
     
-    for(int i = 0; i < streets.size(); i++)
-    {
-        streets[i]->draw(2017);
-    }
+    glutSwapBuffers();   // Double buffering, swap buffers
+}
+
+void drawAssets()
+{
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
     
     // Set ground block material properties
     glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
@@ -337,11 +332,28 @@ void display(void)
     glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
     
     
+    // Set material properties of the streets
+    //    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
+    //    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
+    //    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
+    //    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
+    
+    for(int i = 0; i < streets.size(); i++)
+    {
+        streets[i]->draw(2017);
+    }
+    
     //skybox
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    skybox.draw(2002, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
+    glDisable(GL_CULL_FACE);
+    glPushMatrix();
+    glTranslatef(0, -worldSize*0.1, 0);
+    skybox.draw(2004, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
+    glPopMatrix();
     
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     
     for(int i = 0; i < buildings.size(); i++)
     {
@@ -352,16 +364,14 @@ void display(void)
     droneEnemy.draw();
     dronePlayer.draw();
     
-//    droneEnemy2.draw();
-//    droneEnemy3.draw();
-//    droneEnemy4.draw();
-//    droneEnemy5.draw();
-//    droneEnemy6.draw();
-//    droneEnemy7.draw();
-//    droneEnemy8.draw();
-//    droneEnemy9.draw();
+    // Set material properties of the ground
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ground_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, ground_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, ground_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
     
-    glutSwapBuffers();   // Double buffering, swap buffers
+    //Draw ground quad
+    ground.draw(2000, stCoordinates, false);
 }
 
 // Callback, called at initialization and whenever user resizes the window.
@@ -369,9 +379,19 @@ void reshape(int w, int h)
 {
     windowWidth = w;
     windowHeight = h;
-
-    // Set up the camera at position (0, 6, 22) looking at the origin, up along positive y axis
-    //gluLookAt(0.0, 6.0, 22.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    
+    //Boundaries of the spline viewport
+    cityViewportX  = windowWidth*tpViewportRatio;
+    cityViewportY =  0;
+    cityViewportWidth = windowWidth-cityViewportX;
+    cityViewportHeight = windowHeight*0.5;
+    
+    
+    //Boundaries of the base viewport
+    fpViewportX  = windowWidth*tpViewportRatio;
+    fpViewportY =  cityViewportHeight;
+    fpViewportWidth = windowWidth-fpViewportX;
+    fpViewportHeight = windowHeight*0.5;
 }
 
 // Callback, handles input from the keyboard, non-arrow keys
@@ -411,14 +431,14 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'i':
         {
-            camera.setZoomChangeRate(0.01);
-            camera.controlActions[2] = true;
+            tpCamera.setZoomChangeRate(0.01);
+            tpCamera.controlActions[2] = true;
             break;
         }
         case 'o':
         {
-            camera.setZoomChangeRate(-0.01);
-            camera.controlActions[2] = true;
+            tpCamera.setZoomChangeRate(-0.01);
+            tpCamera.controlActions[2] = true;
             break;
         }
     }
@@ -447,10 +467,10 @@ void keyboardUp(unsigned char key, int x, int y)
             break;
         }
         case 'i':
-            camera.controlActions[2] = false;
+            tpCamera.controlActions[2] = false;
             break;
         case 'o':
-            camera.controlActions[2] = false;
+            tpCamera.controlActions[2] = false;
             break;
     }
     glutPostRedisplay();
@@ -514,16 +534,16 @@ void mouseButtonHandler(int button, int state, int xMouse, int yMouse)
         {
             case GLUT_DOWN:
             {
-                if(xMouse < vWidth && xMouse > 0 && yMouse <= vHeight && yMouse > 0)
+                if(xMouse < windowWidth && xMouse > 0 && yMouse <= windowHeight && yMouse > 0)
                 {
-                    camera.clickX = xMouse;
-                    camera.clickY = yMouse;
-                    camera.clickAndDrag = true;
+                    tpCamera.clickX = xMouse;
+                    tpCamera.clickY = yMouse;
+                    tpCamera.clickAndDrag = true;
                 }
                 break;
             }
             case GLUT_UP:
-                camera.clickAndDrag = false;
+                tpCamera.clickAndDrag = false;
         }
     }
     
@@ -535,9 +555,9 @@ void mouseMotionHandler(int xMouse, int yMouse)
 {
     if (currentButton == GLUT_LEFT_BUTTON)
     {
-        if(camera.clickAndDrag)
+        if(tpCamera.clickAndDrag)
         {
-            camera.move(xMouse, yMouse);
+            tpCamera.move(xMouse, yMouse);
         }
     }
     
@@ -644,6 +664,11 @@ void loadTextures(vector<char const*> texFiles)
         glBindTexture(GL_TEXTURE_2D, 2000 + i);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        
+        // ... process data if not NULL ...
+        // ... x = width, y = height, n = # 8-bit components per pixel ...
+        // ... replace '0' with '1'..'4' to force that many components per pixel
+        // ... but 'n' will always be the number that it would have been if you said 0
         if (n == 3)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -652,34 +677,30 @@ void loadTextures(vector<char const*> texFiles)
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         }
-        // ... process data if not NULL ...
-        // ... x = width, y = height, n = # 8-bit components per pixel ...
-        // ... replace '0' with '1'..'4' to force that many components per pixel
-        // ... but 'n' will always be the number that it would have been if you said 0
-        //stbi_image_free(data);
+        stbi_image_free(data);
     }
 }
 
 void handleCollisions()
 {
-    // Check for drone/missile collisions with the buildings/ground
+    // Check for drone/missile collisions with the buildings
     for(int i = 0; i < buildings.size(); i++)
     {
-        // Check if the dronePlayer collided with a building or the ground
+        // Check if the dronePlayer collided with a building
         bool collideBld = buildings[i]->checkObjectCollision(dronePlayer.getPosition());
         if(collideBld && !dronePlayer.isDestroyed)
         {
             dronePlayer.destroy();
         }
         
-        // Check if the droneEnemy collided with a building or the ground
+        // Check if the droneEnemy collided with a building
         collideBld = buildings[i]->checkObjectCollision(droneEnemy.getPosition());
         if(collideBld && !droneEnemy.isDestroyed)
         {
             droneEnemy.destroy();
         }
         
-        // Check if one of the dronePlayer's missiles collided with a building or the ground
+        // Check if one of the dronePlayer's missiles collided with a building
         for(int j = 0; j < dronePlayer.missiles.size(); j++)
         {
             collideBld = buildings[i]->checkObjectCollision(dronePlayer.missiles[j].getPosition());
@@ -689,7 +710,7 @@ void handleCollisions()
             }
         }
         
-        // Check if one of the droneEnemy's missiles collided with a building or the ground
+        // Check if one of the droneEnemy's missiles collided with a building
         for(int j = 0; j < droneEnemy.missiles.size(); j++)
         {
             collideBld = buildings[i]->checkObjectCollision(droneEnemy.missiles[j].getPosition());
@@ -758,15 +779,25 @@ void handleCollisions()
         droneEnemy.destroy();
         dronePlayer.destroy();
     }
+    
+    // Check if the dronePlayer and droneEnemy collide with the ground
+    if(dronePlayer.getPosition().y < 0)
+    {
+        dronePlayer.destroy();
+    }
+    if(droneEnemy.getPosition().y < 0)
+    {
+        droneEnemy.destroy();
+    }
 }
 
-// Returns true if the given point is out of bounds (not within the ground plane area)
+// Returns true if the given point is out of bounds (not within the ground plane area or above ground)
 bool checkOutOfBounds(Vector3D point)
 {
     float halfLength = groundLength/2;
     float halfWidth = groundWidth/2;
     if(point.x > halfLength || point.x < -halfLength ||
-       point.z > halfWidth || point.z < -halfWidth)
+       point.z > halfWidth || point.z < -halfWidth || point.y < 0)
     {
         return true;
     }

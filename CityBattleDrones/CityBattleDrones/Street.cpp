@@ -21,7 +21,7 @@ Street::Street():
 void Street::build()
 {
     streetPoly = Polygon();
-    vector<Vector3D> verts({Vector3D(1,0,-1), Vector3D(1,0,1), Vector3D(-1,0,1), Vector3D(-1,0,-1)});
+    vector<Vector3D> verts({Vector3D(-1,0,-1), Vector3D(-1,0,1), Vector3D(1,0,1), Vector3D(1,0,-1)});
     streetPoly.verts = verts;
     streetPoly.calculateNormal();
 }
@@ -42,8 +42,7 @@ void Street::draw(int textID)
     float streetWidth = scaleZ*2;
     float ratio = 3; // street texture should be 3 times longer than its width
     
-    float numRepeat = streetWidth/(3*streetLength);
-    cout << numRepeat << "\n";
+    float numRepeat = streetWidth/(ratio*streetLength);
     vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,numRepeat), Vector2D(1,numRepeat), Vector2D(1,0)};
     
     glPushMatrix();

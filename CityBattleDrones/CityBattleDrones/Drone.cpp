@@ -63,10 +63,10 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spaw
 void Drone::draw()
 {
     // Set drone material properties
-    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
+//    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
+//    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
+//    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
+//    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
     
 
     glPushMatrix();
@@ -89,10 +89,10 @@ void Drone::draw()
     drawArms();
     
     // Set drone material properties
-    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
+//    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
+//    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
+//    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
+//    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
     
     drawCockpit();
     glPopMatrix();
@@ -148,10 +148,6 @@ void Drone::createArms(GLfloat armLength, GLfloat armWidth)
 void Drone::changeElevation(GLfloat deltaY)
 {
     position.y += deltaY;
-    //To prevent the drone from beneath ground level
-    if(position.y < -3.0){
-        position.y = -3.0;
-    }
 }
 
 // Changes the forward direction that the drone is facing by deltaAngle
@@ -285,15 +281,19 @@ void Drone::setAction(int actionIndex, bool set)
 
 void Drone::destroy()
 {
-    isDestroyed = true;
-    timeDestroyed = glutGet(GLUT_ELAPSED_TIME);
-    
-    //Set random rotation scales for each arm for use in the destroy animation
-    for(int i = 0; i < arms.size(); i++){
-        float rotX = ((rand() % 60) - 30)/10.0; //between -3 and +3
-        float rotY = ((rand() % 6) + 7)/10.0; //between 0.7 and 1.3
-        float rotZ = ((rand() % 60) - 30)/10.0; //between -3 and +3
-        arms.at(i).destroyRotations = Vector3D(rotX, rotY, rotZ);
+    if(!isDestroyed)
+    {
+        cout << position.y << "\n";
+        isDestroyed = true;
+        timeDestroyed = glutGet(GLUT_ELAPSED_TIME);
+        
+        //Set random rotation scales for each arm for use in the destroy animation
+        for(int i = 0; i < arms.size(); i++){
+            float rotX = ((rand() % 60) - 30)/10.0; //between -3 and +3
+            float rotY = ((rand() % 6) + 7)/10.0; //between 0.7 and 1.3
+            float rotZ = ((rand() % 60) - 30)/10.0; //between -3 and +3
+            arms.at(i).destroyRotations = Vector3D(rotX, rotY, rotZ);
+        }
     }
 }
 

@@ -31,10 +31,10 @@ DroneArm::DroneArm(GLfloat armLength, GLfloat armWidth, GLfloat propBaseScaleY, 
 void DroneArm::draw(){
     
     // Set drone arm material properties
-    glMaterialfv(GL_FRONT, GL_AMBIENT, arm_mat_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, arm_mat_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, arm_mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, arm_mat_shininess);
+//    glMaterialfv(GL_FRONT, GL_AMBIENT, arm_mat_ambient);
+//    glMaterialfv(GL_FRONT, GL_SPECULAR, arm_mat_specular);
+//    glMaterialfv(GL_FRONT, GL_DIFFUSE, arm_mat_diffuse);
+//    glMaterialfv(GL_FRONT, GL_SHININESS, arm_mat_shininess);
     
     vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
     

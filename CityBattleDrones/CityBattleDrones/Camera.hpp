@@ -34,10 +34,10 @@ class Camera
     float clickX;
     float clickY;
     bool clickAndDrag;
-    const float minElevation = 5;
-    const float maxElevation = 85;
-    const float minZoomDistance = 0.01;
-    const float maxZoomDistance = 20;
+    float minElevation = 5;
+    float maxElevation = 85;
+    float minZoomDistance = 0.01;
+    float maxZoomDistance = 20;
     Vector3D position;
     Vector3D focus;
     Vector3D forward;
@@ -55,6 +55,8 @@ class Camera
     void setZoom(float distance);
     void changeFocus(Vector3D newFocus);
     void move(float mouseX, float mouseY);
+    void setMinElevation(float newMin);
+    void setMaxElevation(float newMax);
 };
 
 #endif /* Camera_hpp */

@@ -38,10 +38,10 @@ void Propeller::draw()
 void Propeller::drawBlades()
 {
     // Set propeller material properties
-    glMaterialfv(GL_FRONT, GL_AMBIENT, prop_mat_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, prop_mat_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, prop_mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, prop_mat_shininess);
+//    glMaterialfv(GL_FRONT, GL_AMBIENT, prop_mat_ambient);
+//    glMaterialfv(GL_FRONT, GL_SPECULAR, prop_mat_specular);
+//    glMaterialfv(GL_FRONT, GL_DIFFUSE, prop_mat_diffuse);
+//    glMaterialfv(GL_FRONT, GL_SHININESS, prop_mat_shininess);
     
     for(int i = 0; i < numPropBlades; i++){
         //draws propeller blade

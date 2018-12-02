@@ -81,7 +81,6 @@
 		E84F895321A87C7C00FECB69 /* floor1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = floor1.bmp; sourceTree = "<group>"; };
 		E84F895421A8898000FECB69 /* Vector2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vector2D.cpp; sourceTree = "<group>"; };
 		E84F895521A8898000FECB69 /* Vector2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vector2D.hpp; sourceTree = "<group>"; };
-		E84F895721A89FD700FECB69 /* skybox1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox1.bmp; sourceTree = "<group>"; };
 		E84F895821A8A87A00FECB69 /* cityGround1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = cityGround1.bmp; sourceTree = "<group>"; };
 		E84F895921A8D95D00FECB69 /* skybox2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox2.bmp; sourceTree = "<group>"; };
 		E84F895A21A8DBC500FECB69 /* skybox3.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox3.bmp; sourceTree = "<group>"; };
@@ -112,6 +111,8 @@
 		E88D5E2721B1D95D0068214D /* CityMetaData3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CityMetaData3.txt; sourceTree = "<group>"; };
 		E88D5E2A21B1EC580068214D /* street.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = street.bmp; sourceTree = "<group>"; };
 		E88D5E2B21B1EFB50068214D /* ground2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ground2.bmp; sourceTree = "<group>"; };
+		E88D5E2D21B3633B0068214D /* skybox1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox1.bmp; sourceTree = "<group>"; };
+		E88D5E2E21B363660068214D /* skybox4.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox4.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,12 +199,13 @@
 				E84F896721A90FE400FECB69 /* roofTex3.bmp */,
 				E84F896221A9097600FECB69 /* roofTex1.bmp */,
 				E84F896321A90AE500FECB69 /* roofTex2.bmp */,
+				E88D5E2D21B3633B0068214D /* skybox1.bmp */,
 				E84F895821A8A87A00FECB69 /* cityGround1.bmp */,
 				E84F895B21A8DE9D00FECB69 /* floorTex1.bmp */,
 				E84F893C21A0DD7900FECB69 /* plank01.bmp */,
-				E84F895721A89FD700FECB69 /* skybox1.bmp */,
 				E84F895921A8D95D00FECB69 /* skybox2.bmp */,
 				E84F895A21A8DBC500FECB69 /* skybox3.bmp */,
+				E88D5E2E21B363660068214D /* skybox4.bmp */,
 				E84F893E21A263AD00FECB69 /* redMetal.bmp */,
 				E84F894121A2654400FECB69 /* redMetal1.bmp */,
 				E84F894A21A3AF8700FECB69 /* jon.bmp */,

@@ -21,7 +21,11 @@ Camera::Camera():
     zoomChangeRate(3),
     position(Vector3D()),
     forward(Vector3D()),
-    focus(Vector3D(0,0,0))
+    focus(Vector3D(0,0,0)),
+    minElevation(5),
+    maxElevation(85),
+    minZoomDistance(0.01),
+    maxZoomDistance(20)
     {
         controlActions[0] = false;
         controlActions[1] = false;
@@ -37,11 +41,11 @@ void Camera::update()
     
     if(azimuth >= 360)
     {
-        //azimuth -= 360;
+        azimuth -= 360;
     }
     else if(azimuth < 0)
     {
-        //azimuth += 360;
+        azimuth += 360;
     }
     
     if(elevation < minElevation)
@@ -61,8 +65,6 @@ void Camera::update()
     {
         zoomDistance = maxZoomDistance;
     }
-    
-    //cout << azimuth << "\n";
     
     //change elevation
     position.x = 0;
@@ -121,4 +123,13 @@ void Camera::move(float mouseX, float mouseY)
     elevation += (mouseY-clickY)/8;
     clickX = mouseX;
     clickY = mouseY;
+}
+
+void Camera::setMinElevation(float newMin)
+{
+    minElevation = newMin;
+}
+void Camera::setMaxElevation(float newMax)
+{
+    maxElevation = newMax;
 }

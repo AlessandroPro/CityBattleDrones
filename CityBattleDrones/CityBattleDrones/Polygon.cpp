@@ -34,8 +34,8 @@ void Polygon::calculateNormal()
 void Polygon::draw()
 {
     glBegin(GL_POLYGON);
-    glNormal3f(normal.x, normal.y, normal.z);
     for(int i = 0; i < verts.size(); i++){
+        glNormal3f(normal.x, normal.y, normal.z);
         glVertex3f(verts[i].x, verts[i].y, verts[i].z);
     }
     glEnd();
@@ -54,8 +54,8 @@ void Polygon::draw(int texID, vector<Vector2D> stCoordinates, bool hasAlpha)
     }
     
     glBegin(GL_POLYGON);
-    glNormal3f(normal.x, normal.y, normal.z);
     for(int i = 0; i < verts.size(); i++){
+        glNormal3f(normal.x, normal.y, normal.z);
         glTexCoord2f(stCoordinates[i].x, stCoordinates[i].y);
         glVertex3f(verts[i].x, verts[i].y, verts[i].z);
     }
