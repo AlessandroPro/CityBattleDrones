@@ -55,18 +55,18 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spaw
     createArms(3.0, 0.5);
     for(int i = 0; i < maxNumMissiles; i++)
     {
-        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,3,5), 2014, 2013);
+        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,0,0), 2014, 2013);
         missiles.push_back(missile);
     }
 }
 
 void Drone::draw()
 {
-    // Set drone material properties
-//    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
-//    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
-//    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
-//    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
+    //Set drone material properties
+    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
     
 
     glPushMatrix();
@@ -89,10 +89,10 @@ void Drone::draw()
     drawArms();
     
     // Set drone material properties
-//    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
-//    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
-//    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
-//    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, drone_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, drone_mat_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, drone_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, drone_mat_shininess);
     
     drawCockpit();
     glPopMatrix();
@@ -215,7 +215,10 @@ void Drone::drawCockpit()
         glColor4f(1.0, 1.0, 1.0, 1 - animPercent);
         glScalef(0.3 + animPercent*4, 0.3 + animPercent*5, 0.3 + animPercent*4);
         glScalef(3, 2, 3);
+        glDisable(GL_CULL_FACE);
         smoke.draw(2015, stCoordinates, true);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glPopMatrix();
         
         // Flings the destroyed cockpit

@@ -34,9 +34,20 @@ void Polygon::calculateNormal()
 void Polygon::draw()
 {
     glBegin(GL_POLYGON);
-    for(int i = 0; i < verts.size(); i++){
-        glNormal3f(normal.x, normal.y, normal.z);
-        glVertex3f(verts[i].x, verts[i].y, verts[i].z);
+    glNormal3f(normal.x, normal.y, normal.z);
+    if(isFrontFacing)
+    {
+        for(int i = 0; i < verts.size(); i++)
+        {
+            glVertex3f(verts[i].x, verts[i].y, verts[i].z);
+        }
+    }
+    else
+    {
+        for(int i = (int)verts.size(); i > 0; i--)
+        {
+            glVertex3f(verts[i-1].x, verts[i-1].y, verts[i-1].z);
+        }
     }
     glEnd();
 }
@@ -54,10 +65,22 @@ void Polygon::draw(int texID, vector<Vector2D> stCoordinates, bool hasAlpha)
     }
     
     glBegin(GL_POLYGON);
-    for(int i = 0; i < verts.size(); i++){
-        glNormal3f(normal.x, normal.y, normal.z);
-        glTexCoord2f(stCoordinates[i].x, stCoordinates[i].y);
-        glVertex3f(verts[i].x, verts[i].y, verts[i].z);
+    glNormal3f(normal.x, normal.y, normal.z);
+    if(isFrontFacing)
+    {
+        for(int i = 0; i < verts.size(); i++)
+        {
+            glTexCoord2f(stCoordinates[i].x, stCoordinates[i].y);
+            glVertex3f(verts[i].x, verts[i].y, verts[i].z);
+        }
+    }
+    else
+    {
+        for(int i = (int)verts.size(); i > 0; i--)
+        {
+            glTexCoord2f(stCoordinates[i-1].x, stCoordinates[i-1].y);
+            glVertex3f(verts[i-1].x, verts[i-1].y, verts[i-1].z);
+        }
     }
     glEnd();
     

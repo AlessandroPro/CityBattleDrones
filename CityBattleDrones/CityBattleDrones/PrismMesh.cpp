@@ -81,11 +81,12 @@ void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex,
             float angle = (360.0/numBaseEdges)*i;
             
             float norm = 0.5;
-            float x = sin(angle * PI / 180.0)*norm;
-            float z = cos(angle * PI / 180.0)*norm;
+            float x = sin(angle * PI / 180.0)*norm + 0.5;
+            float z = cos(angle * PI / 180.0)*norm + 0.5;
             
-            stBaseCoords.push_back(Vector2D(x,z));
+            stBaseCoords.push_back(Vector2D(z,x));
         }
+        cout << "\n";
         //if the base is a square/rectangle, fit it perfectly to the texture
         if(numBaseEdges == 4)
         {

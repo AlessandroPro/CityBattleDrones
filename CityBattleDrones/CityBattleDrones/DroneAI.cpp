@@ -26,7 +26,7 @@ void DroneAI::lookAt(Vector3D pos)
     
     forward.x = lookAtXZ.y;
     forward.z = lookAtXZ.x;
-    rotation.y = RADTODEG * atan(lookAtXZ.y/lookAtXZ.x);
+    rotation.y = RADTODEG * atan2f(lookAtXZ.x, lookAtXZ.y);
 }
 
 void DroneAI::moveToward(Vector3D pos)

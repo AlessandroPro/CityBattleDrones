@@ -25,9 +25,9 @@
 #define PI 3.14159265
 
 // Material properties
-static GLfloat drone_mat_ambient[] = { 0.4F, 0.2F, 0.05F, 1.0F };
+static GLfloat drone_mat_ambient[] = { 0.35F, 0.3F, 0.3F, 1.0F };
 static GLfloat drone_mat_specular[] = { 0.5F, 0.5F, 0.4F, 1.0F };
-static GLfloat drone_mat_diffuse[] = { 0.1F, 0.1F, 0.8F, 0.2F };
+static GLfloat drone_mat_diffuse[] = { 0.85F, 0.8F, 0.8F, 0.1F };
 static GLfloat drone_mat_shininess[] = { 0.8F };
 
 using namespace std;
@@ -47,7 +47,7 @@ protected:
     Vector3D position;
     Vector3D spawnPoint;
     Vector3D rotation;
-    Vector3D forward;
+    
     Vector3D tiltAxis;
     PrismMesh prism;
     vector<DroneArm> arms;
@@ -60,6 +60,8 @@ protected:
     int maxNumMissiles;
     
 public:
+    
+    Vector3D forward;
     
     bool propsSpinning;
     bool isDestroyed;

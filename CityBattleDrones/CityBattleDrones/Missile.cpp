@@ -64,7 +64,7 @@ void Missile::draw()
         glScalef(scaleFactor/2, scaleFactor/2, scaleFactor);
         glScalef(1, 1, length);
         glRotatef(90, 1, 0, 0);
-        body.draw(bodyTexture, stBodyCoords, true, bodyTexture);
+        body.draw(bodyTexture, stBodyCoords, true, 2016);
         for(int i = 0; i < body.getNumSides(); i++)
         {
             // Triangle polygon to make pyramid head for the missle
@@ -103,7 +103,10 @@ void Missile::draw()
             glColor4f(1.0, 1.0, 1.0, 1 - animPercent);
             glScalef(0.3 + animPercent*4, 0.3 + animPercent*5, 0.3 + animPercent*4);
             glScalef(3, 2, 3);
+            glDisable(GL_CULL_FACE);
             smoke.draw(2015, stCoordinates, true);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
             glPopMatrix();
         }
     }

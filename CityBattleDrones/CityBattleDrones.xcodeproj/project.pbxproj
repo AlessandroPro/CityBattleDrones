@@ -40,6 +40,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E8107E4421B4E45200D0558F /* fShader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fShader.glsl; sourceTree = "<group>"; };
+		E8107E4521B4E45200D0558F /* vShader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vShader.glsl; sourceTree = "<group>"; };
 		E82270B921B0C3FC0037E2B8 /* missileTex1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = missileTex1.bmp; sourceTree = "<group>"; };
 		E84F8902219F90DD00FECB69 /* CityBattleDrones */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CityBattleDrones; sourceTree = BUILT_PRODUCTS_DIR; };
 		E84F890D219F914C00FECB69 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -113,6 +115,8 @@
 		E88D5E2B21B1EFB50068214D /* ground2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ground2.bmp; sourceTree = "<group>"; };
 		E88D5E2D21B3633B0068214D /* skybox1.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox1.bmp; sourceTree = "<group>"; };
 		E88D5E2E21B363660068214D /* skybox4.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = skybox4.bmp; sourceTree = "<group>"; };
+		E88D5E3121B3AB900068214D /* blast.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = blast.bmp; sourceTree = "<group>"; };
+		E88D5E3321B453030068214D /* cityGround2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = cityGround2.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +181,10 @@
 				E84F894D21A780F600FECB69 /* Building.cpp */,
 				E88D5E2221B1C4140068214D /* Street.cpp */,
 				E88D5E2321B1C4140068214D /* Street.hpp */,
+				E8107E4421B4E45200D0558F /* fShader.glsl */,
+				E8107E4521B4E45200D0558F /* vShader.glsl */,
+				E88D5E3121B3AB900068214D /* blast.bmp */,
+				E88D5E3321B453030068214D /* cityGround2.bmp */,
 				E88D5E2B21B1EFB50068214D /* ground2.bmp */,
 				E84F895221A7851600FECB69 /* CityMetaData.txt */,
 				E88D5E2521B1C4CB0068214D /* CityMetaData1.txt */,

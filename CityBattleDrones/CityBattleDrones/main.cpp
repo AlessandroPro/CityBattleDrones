@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <sys/stat.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #include <stdlib.h>
@@ -33,8 +34,12 @@ int windowHeight = 500;
 
 const int groundLength = 36;          // Default ground length 100 meters/unit
 const int groundWidth = 36;           // Default ground height 100 meters/unit
-const int worldSize = 150;            // Size of the world, used for the skybox
+const int worldSize = 300;            // Size of the world, used for the skybox
 const double tpViewportRatio = 0.7; // Window Width Ratio for the third-person viewport
+
+GLuint program = 0;
+GLint texMapLocation;
+GLint decalModeLocation;
 
 //Boundaries of the city viewport
 static GLdouble cityViewportX;
@@ -68,6 +73,8 @@ static vector<int> roofTextures;
 static string CityMetaDataFile = "CityMetaData3.txt";
 static Polygon ground;
 static PrismMesh skybox;
+static Polygon dpMapIcon;
+static Polygon deMapIcon;
 
 //Textures
 static std::vector<char const*> texFiles; //array of texture filenames
@@ -75,36 +82,39 @@ static std::vector<char const*> texFiles; //array of texture filenames
 
 // Light properties
 static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
-//static GLfloat light_diffuse[] = { 1.0, 1.0, 0.8, 1.0 };
-//static GLfloat light_specular[] = { 1.0, 1.0, 0.8, 1.0 };
-//static GLfloat light_ambient[] = { 0.99F, 0.99F, 0.99F, 1.0F };
+static GLfloat light_diffuse[] = { 1.0, 0.95, 0.7, 1.0 };
+static GLfloat light_specular[] = { 1.0, 0.9, 0.7, 1.0 };
+static GLfloat light_ambient[] = { 0.95F, 0.8F, 0.6F, 1.0F };
 
-static GLfloat light_diffuse[] = { 0.9, 0.9, 1.0, 1.0 };
-static GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-static GLfloat light_ambient[] = { 0.99F, 0.99F, 1.0F, 0.9F };
-
-// Material properties for the ground blocks
-//static GLfloat block_mat_ambient[] = { 0.34F, 0.2F, 0.05F, 1.0F };
-//static GLfloat block_mat_specular[] = { 0.4F, 0.2F, 0.4F, 1.0F };
-//static GLfloat block_mat_diffuse[] = { 0.6F, 0.9F, 0.9F, 0.0F };
-//static GLfloat block_mat_shininess[] = { 0.8F };
-
-static GLfloat block_mat_ambient[] = { 0.4F, 0.4F, 0.45F, 1.0F };
-static GLfloat block_mat_specular[] = { 0.6F, 0.6F, 0.6F, 1.0F };
-static GLfloat block_mat_diffuse[] = { 0.6F, 0.6F, 0.65F, 1.0F };
+//Material properties for the ground blocks
+static GLfloat block_mat_ambient[] = { 0.3F, 0.2F, 0.2F, 1.0F };
+static GLfloat block_mat_specular[] = { 0.4F, 0.3F, 0.3F, 1.0F };
+static GLfloat block_mat_diffuse[] = { 0.9F, 0.8F, 0.8F, 1.0F };
 static GLfloat block_mat_shininess[] = { 0.8F };
 
 // Ground material properties
-static GLfloat ground_ambient[] = { 0.6F, 0.6F, 0.6F, 1.0F };
+static GLfloat ground_ambient[] = { 0.55F, 0.5F, 0.5F, 1.0F };
 static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 1.0F };
-static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.4F, 1.0F };
+static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.3F, 1.0F };
 static GLfloat ground_shininess[] = { 0.1F };
 
 // Street material properties
-static GLfloat street_ambient[] = { 0.4F, 0.3F, 0.1F, 1.0F };
-static GLfloat street_specular[] = { 0.1F, 0.1F, 0.1F, 1.0F };
-static GLfloat street_diffuse[] = { 0.3F, 0.3F, 0.3F, 0.0F };
+static GLfloat street_ambient[] = { 0.6F, 0.5F, 0.5F, 1.0F };
+static GLfloat street_specular[] = { 0.15F, 0.1F, 0.1F, 1.0F };
+static GLfloat street_diffuse[] = { 0.4F, 0.3F, 0.3F, 1.0F };
 static GLfloat street_shininess[] = { 0.1F };
+
+// Drone Player Map Icon material properties
+static GLfloat dpMap_ambient[] = { 0.1F, 0.1F, 0.9F, 1.0F };
+static GLfloat dpMap_specular[] = { 1.0F, 1.0F, 1.0F, 1.0F };
+static GLfloat dpMap_diffuse[] = { 1.0F, 1.0F, 1.0F, 1.0F };
+static GLfloat dpMap_shininess[] = { 0.8F };
+
+// Drone Enemy Map Icon material properties
+static GLfloat deMap_ambient[] = { 0.9F, 0.1F, 0.1F, 1.0F };
+static GLfloat deMap_specular[] = { 1.0F, 1.0F, 1.0F, 1.0F };
+static GLfloat deMap_diffuse[] = { 1.0F, 1.0F, 1.0F, 1.0F };
+static GLfloat deMap_shininess[] = { 0.8F };
 
 // Skybox texture grid s&t coordinates (5x4 grid lines)
 // Example: st12 represents the intersection of vertical line 1 and horizontal line 2
@@ -140,6 +150,7 @@ static vector<vector<Vector2D>> stSkySideCoords = {{st11, st12, st22, st21},
 void initOpenGL(int w, int h);
 void display(void);
 void drawAssets();
+void drawMap();
 void reshape(int w, int h);
 void keyboard(unsigned char key, int x, int y);
 void keyboardUp(unsigned char key, int x, int y);
@@ -154,6 +165,10 @@ void loadCity(string filename);
 void loadTextures(vector<char const*> texFiles);
 void handleCollisions();
 bool checkOutOfBounds(Vector3D point);
+
+static char* readShaderSource(const char* shaderFile);
+static void checkError(GLint status, const char *msg);
+static void initShader(const GLchar* vShaderFile, const GLchar* fShaderFile);
 
 int main(int argc, char **argv)
 {
@@ -178,6 +193,8 @@ int main(int argc, char **argv)
     glutMotionFunc(mouseMotionHandler);
     glutIdleFunc(display);
 
+    initShader("vShader.glsl", "fShader.glsl");
+    
     // Start event loop, never returns
     glutMainLoop();
 
@@ -209,7 +226,7 @@ void initOpenGL(int w, int h)
     glCullFace(GL_BACK);
     
     //Load textures
-    texFiles.push_back("ground2.bmp");  //2000
+    texFiles.push_back("cityGround2.bmp");  //2000
     
     texFiles.push_back("steelGradient.bmp");    //2001
     
@@ -230,7 +247,7 @@ void initOpenGL(int w, int h)
     
     texFiles.push_back("missileTex1.bmp"); //2014
     texFiles.push_back("smoke1.png");       //2015
-    texFiles.push_back("smoke2.png");       //2016
+    texFiles.push_back("blast.bmp");       //2016
     
     texFiles.push_back("street.bmp");       //2017
     
@@ -244,8 +261,13 @@ void initOpenGL(int w, int h)
     ground.verts.push_back(Vector3D(groundLength/2, -0.1, -groundWidth/2));
     ground.calculateNormal();
     
-    fpCamera.setMinElevation(185);
-    fpCamera.setMaxElevation(375);
+    fpCamera.setElevation(5);
+    
+    vector<Vector3D> verts({Vector3D(-1,0,0),Vector3D(0,0,3),Vector3D(1,0,0)});
+    dpMapIcon.verts = verts;
+    deMapIcon.verts = verts;
+    dpMapIcon.calculateNormal();
+    deMapIcon.calculateNormal();
 }
 
 
@@ -279,7 +301,7 @@ void display(void)
     tpCamera.update();
     
     fpCamera.changeFocus(Vector3D(newFocus.x, newFocus.y - 0.02, newFocus.z));
-    fpCamera.setAzimuth(180 + dronePlayer.getRotationY());
+    fpCamera.setAzimuth(dronePlayer.getRotationY());
     fpCamera.update();
     
     glViewport(0, 0, (GLsizei)windowWidth*tpViewportRatio, (GLsizei)windowHeight);
@@ -291,15 +313,18 @@ void display(void)
     gluLookAt(tpCamera.position.x, tpCamera.position.y, tpCamera.position.z, tpCamera.focus.x, tpCamera.focus.y, tpCamera.focus.z, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
+    glUniform1i(texMapLocation, 0);
+    glUniform1i(decalModeLocation, 0);
     drawAssets();
     
     glViewport(fpViewportX, fpViewportY, (GLsizei)fpViewportWidth, (GLsizei)fpViewportHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0, (GLdouble)(fpViewportWidth/fpViewportHeight), 0.01, 400.0);
+    gluPerspective(60.0, (GLdouble)(fpViewportWidth/fpViewportHeight), 0.005, 400.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(fpCamera.focus.x, fpCamera.focus.y, fpCamera.focus.z, tpCamera.position.x, fpCamera.position.y, fpCamera.position.z, 0, 1, 0);
+    float invertedY = fpCamera.focus.y - (fpCamera.position.y - fpCamera.focus.y);
+    gluLookAt(fpCamera.focus.x, fpCamera.focus.y, fpCamera.focus.z, fpCamera.position.x, invertedY, fpCamera.position.z, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
     drawAssets();
@@ -307,13 +332,14 @@ void display(void)
     glViewport(cityViewportX, cityViewportY, (GLsizei)cityViewportWidth, (GLsizei)cityViewportHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0, (GLdouble)(cityViewportWidth/cityViewportWidth), 0.01, 400.0);
+    gluPerspective(20.0, (GLdouble)(cityViewportWidth/cityViewportWidth), 0.01, 400.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(-8, 8, 12, groundWidth/2, 5, 0, 0, 1, 0);
+    //gluLookAt(-8, 8, 12, groundWidth/2, 5, 0, 0, 1, 0);
+    gluLookAt(0.1, 101, 0, 0, 0, 0, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
-    //drawAssets();
+    drawMap();
 
     
     glutSwapBuffers();   // Double buffering, swap buffers
@@ -325,18 +351,12 @@ void drawAssets()
 
     vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
     
-    // Set ground block material properties
-    glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, block_mat_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, block_mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
-    
     
     // Set material properties of the streets
-    //    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
-    //    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
-    //    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
-    //    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
     
     for(int i = 0; i < streets.size(); i++)
     {
@@ -346,23 +366,27 @@ void drawAssets()
     //skybox
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     glDisable(GL_CULL_FACE);
+    glUniform1i(decalModeLocation, 1);
     glPushMatrix();
-    glTranslatef(0, -worldSize*0.1, 0);
-    skybox.draw(2004, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
+    glTranslatef(0, 0, 0);
+    skybox.draw(2002, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
     glPopMatrix();
-    
+    glUniform1i(decalModeLocation, 0);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    
+    // Set ground block material properties
+    glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, block_mat_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, block_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
     
     for(int i = 0; i < buildings.size(); i++)
     {
         buildings[i]->draw(2005 + buildingTextures[i], stCoordinates, true, 2010 + roofTextures[i]);
         //buildings[i]->draw(3000, stCoordinates, true, 3000);
     }
-    
-    droneEnemy.draw();
-    dronePlayer.draw();
     
     // Set material properties of the ground
     glMaterialfv(GL_FRONT, GL_AMBIENT, ground_ambient);
@@ -372,26 +396,93 @@ void drawAssets()
     
     //Draw ground quad
     ground.draw(2000, stCoordinates, false);
+    
+    droneEnemy.draw();
+    dronePlayer.draw();
 }
+
+void drawMap()
+{
+    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    
+    
+    // Set material properties of the streets
+    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
+    
+    for(int i = 0; i < streets.size(); i++)
+    {
+        streets[i]->draw();
+    }
+    
+    // Set ground block material properties
+    glMaterialfv(GL_FRONT, GL_AMBIENT, block_mat_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, block_mat_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, block_mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, block_mat_shininess);
+    
+    for(int i = 0; i < buildings.size(); i++)
+    {
+        buildings[i]->draw();
+        //buildings[i]->draw(3000, stCoordinates, true, 3000);
+    }
+    
+    // Set material properties of the ground
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ground_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, ground_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, ground_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, ground_shininess);
+    
+    //Draw ground quad
+    ground.draw();
+    
+    // Set material properties of the the drone player's map icon
+    glMaterialfv(GL_FRONT, GL_AMBIENT, dpMap_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, dpMap_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, dpMap_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, dpMap_shininess);
+    
+    glPushMatrix();
+    glTranslatef(dronePlayer.getPosition().x, 10, dronePlayer.getPosition().z);
+    glRotatef(dronePlayer.getRotationY(), 0, 1, 0);
+    dpMapIcon.draw();
+    glPopMatrix();
+    
+    // Set material properties of the the drone player's map icon
+    glMaterialfv(GL_FRONT, GL_AMBIENT, deMap_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, deMap_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, deMap_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, deMap_shininess);
+    
+    glPushMatrix();
+    glTranslatef(droneEnemy.getPosition().x, 10, droneEnemy.getPosition().z);
+    glRotatef(droneEnemy.getRotationY(), 0, 1, 0);
+    deMapIcon.draw();
+    glPopMatrix();
+}
+
 
 // Callback, called at initialization and whenever user resizes the window.
 void reshape(int w, int h)
 {
     windowWidth = w;
     windowHeight = h;
+    float padding = 5;
     
     //Boundaries of the spline viewport
-    cityViewportX  = windowWidth*tpViewportRatio;
+    cityViewportX  = windowWidth*tpViewportRatio + padding;
     cityViewportY =  0;
     cityViewportWidth = windowWidth-cityViewportX;
-    cityViewportHeight = windowHeight*0.5;
+    cityViewportHeight = windowHeight*0.5 - padding/2.0;
     
     
     //Boundaries of the base viewport
-    fpViewportX  = windowWidth*tpViewportRatio;
-    fpViewportY =  cityViewportHeight;
+    fpViewportX  = windowWidth*tpViewportRatio + padding;
+    fpViewportY =  cityViewportHeight + padding;
     fpViewportWidth = windowWidth-fpViewportX;
-    fpViewportHeight = windowHeight*0.5;
+    fpViewportHeight = windowHeight*0.5 - padding/2.0;
 }
 
 // Callback, handles input from the keyboard, non-arrow keys
@@ -429,16 +520,28 @@ void keyboard(unsigned char key, int x, int y)
         case 'c':
             droneEnemy.launchMissile();
             break;
-        case 'i':
+        case 'n':
         {
             tpCamera.setZoomChangeRate(0.01);
             tpCamera.controlActions[2] = true;
             break;
         }
-        case 'o':
+        case 'm':
         {
             tpCamera.setZoomChangeRate(-0.01);
             tpCamera.controlActions[2] = true;
+            break;
+        }
+        case 'i':
+        {
+            fpCamera.setElevationChangeRate(1);
+            fpCamera.controlActions[1] = true;
+            break;
+        }
+        case 'k':
+        {
+            fpCamera.setElevationChangeRate(-1);
+            fpCamera.controlActions[1] = true;
             break;
         }
     }
@@ -449,6 +552,12 @@ void keyboardUp(unsigned char key, int x, int y)
 {
     switch (key)
     {
+        case 'i':
+            fpCamera.controlActions[1] = false;
+            break;
+        case 'k':
+            fpCamera.controlActions[1] = false;
+            break;
         case 'w':
             dronePlayer.setAction(2, false);
             break;
@@ -466,10 +575,10 @@ void keyboardUp(unsigned char key, int x, int y)
             loadCity(CityMetaDataFile);
             break;
         }
-        case 'i':
+        case 'n':
             tpCamera.controlActions[2] = false;
             break;
-        case 'o':
+        case 'm':
             tpCamera.controlActions[2] = false;
             break;
     }
@@ -802,6 +911,97 @@ bool checkOutOfBounds(Vector3D point)
         return true;
     }
     return false;
+}
+
+
+/* shader reader */
+/* creates null terminated string from file */
+
+static char* readShaderSource(const char* shaderFile)
+{
+    struct stat statBuf;
+    FILE* fp = fopen(shaderFile, "r");
+    char* buf;
+    
+    stat(shaderFile, &statBuf);
+    buf = (char*) malloc((statBuf.st_size + 1) * sizeof(char));
+    fread(buf, 1, statBuf.st_size, fp);
+    buf[statBuf.st_size] = '\0';
+    fclose(fp);
+    return buf;
+}
+
+/* error printing function */
+
+static void checkError(GLint status, const char *msg)
+{
+    if (!status)
+    {
+        printf("%s\n", msg);
+        exit(EXIT_FAILURE);
+    }
+}
+
+/* GLSL initialization */
+
+static void initShader(const GLchar* vShaderFile, const GLchar* fShaderFile)
+{
+    GLint status = glGetError()==GL_NO_ERROR;
+    GLchar *vSource, *fSource;
+    GLuint vShader, fShader;
+    GLuint texMapLocation;
+    
+    /* read shader files */
+    
+    vSource = readShaderSource(vShaderFile);
+    checkError(status, "Failed to read vertex shader");
+    
+    fSource = readShaderSource(fShaderFile);
+    checkError(status, "Failed to read fragment shader");
+    
+    /* create program and shader objects */
+    
+    vShader = glCreateShader(GL_VERTEX_SHADER);
+    fShader = glCreateShader(GL_FRAGMENT_SHADER);
+    program = glCreateProgram();
+    
+    /* attach shaders to the program object */
+    
+    glAttachShader(program, vShader);
+    glAttachShader(program, fShader);
+    
+    /* read shaders */
+    
+    glShaderSource(vShader, 1, (const GLchar**) &vSource, NULL);
+    glShaderSource(fShader, 1, (const GLchar**) &fSource, NULL);
+    
+    /* compile shaders */
+    
+    glCompileShader(vShader);
+    glCompileShader(fShader);
+    
+    /* error check */
+    
+    glGetShaderiv(vShader, GL_COMPILE_STATUS, &status);
+    checkError(status, "Failed to compile the vertex shader.");
+    
+    glGetShaderiv(fShader, GL_COMPILE_STATUS, &status);
+    checkError(status, "Failed to compile the fragment shader.");
+    
+    /* link */
+    
+    glLinkProgram(program);
+    glGetShaderiv(program, GL_LINK_STATUS, &status);
+    //checkError(status, "Failed to link the shader program object.");
+    
+    /* use program object */
+    
+    glUseProgram(program);
+    
+    /* set up uniform parameter */
+    
+    texMapLocation = glGetUniformLocation(program, "texMap");
+    decalModeLocation = glGetUniformLocation(program, "decalMode");
 }
 
 
