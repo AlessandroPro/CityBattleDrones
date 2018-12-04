@@ -1,30 +1,85 @@
 README
 
-Alessandro Profenna
-CPS511 - Assignment 1
-Drone Construction and Manipulation
+ASSIGNMENT COMPLETED AS GROUP OF 2:
+Alessandro Profenna 500564824
+Tolaz Hewa 500590503
+
+CPS511 - Assignment 3
+City Battle Drones
 
 This program was developed on a Mac using Xcode in C++.
 There are two ways to compile and run this program on a Mac:
 
 1) Open a new C++ Xcode project and place all of the files in the project folder. Run it.
 2) There is a makefile for this project. To compile with it, cd into the project directory and
-run 'make' -> this will compile all of the necessary files and generate an 'assignment1' executable. 
-Run './assignment1' to run the program and control-c to terminate it.
+run 'make' -> this will compile all of the necessary files and generate an 'assignment3' executable. 
+Run './assignment3' to run the program and control-c to terminate it.
 
 NOTE: There are deprecation compiler warnings because of GLUT, but these can be ignored.
 NOTE: Although there is code in the makefile for compiling on Windows, it has not been tested.
-Therefore this assignment should be compiled, run, and marked on a Mac. If the TA does not have access
-to a Mac, I can showcase the assignment running on my Mac to the TA at a designated time.
+Therefore this assignment should be compiled, run, and marked on a Mac. If the TA does not have access to a Mac, we can showcase the assignment running on my Mac to the TA at a designated time.
 
 _____________________________________________
 
 
 Project Structure:
 
-The new files written by me are Drone.cpp, DroneArm.hpp, and Propeller.hpp, along with their respective header files. The program runs from main.cpp, which I modified in multiple places to add controls, change materials, initialize the drone, etc.
+The newly written file in this project are:
 
-The Vector3D and QuadMesh files were untouched but are used in the main program.
+--
+main.cpp
+
+Vector2D.cpp
+Vector2D.hpp
+
+Vector3D.cpp
+Vector3D.hpp
+
+Polygon.cpp 
+Polygon.hpp
+
+PrismMesh.cpp (Intead of using cubeMesh.cpp)
+PrismMesh.hpp
+
+Building.cpp
+Building.hpp
+
+Camera.cpp
+Camera.hpp
+
+Drone.cpp
+Drone.hpp
+
+DroneAI.cpp
+DroneAI.hpp
+
+DroneArm.cpp
+DroneArm.hpp
+
+Propeller.cpp
+Propeller.hpp
+
+Street.cpp
+Street.hpp
+
+Missile.cpp
+Missile.hpp
+
+Shaders:
+vShader.glsl
+fShader.glsl
+--
+
+Third-party files that are used but were not written by us:
+
+--
+Spline.cpp (used in constructing the building models)
+Stb_image.cpp (used for loading texture images)
+__
+
+
+The program runs from main.cpp.
+
 
 
 _____________________________________________
@@ -32,40 +87,82 @@ _____________________________________________
 
 Fulfilled Requirements:
 
-All 4 major requirement sections are complete.
-The 2 bonus questions were not attempted.
+All required sections for teams of two are complete.
 
-The comments explaining the CTM construction and vertex matrix multiplication can be found in all files where Push/PopMatrix is called. Each transformation matrix is labeled in the order that they appear. R1, R2, R3, etc. for rotations, T1, T2, T3, etc. for translations, and S1, S2, S3, etc. for scalings. Identity matrix is labeled with the letter I.
+The bonus was also implemented.
+Added special effects:
+-puff of smoke when drones/missiles are destroyed
+-skybox
+-missiles have homing capabilities
+-Map with real-time drone positions displayed
 
-For example, construction of the propeller blades:
-
-        // CTM = I * T1 * R1 * R2 * S1 * R3 * T6
-        glPushMatrix();
-        // Rotates the blade to its designated spot around the pivot's up axis
-        // with the spin offset applied
-        glRotatef(spinAngle, 0.0, 1.0, 0.0); //R4
-        glTranslatef(bladeLength/2, 0.0, 0.0); //T7
-        glScalef(bladeLength/2, 0.25*pivotRadius, pivotRadius); //S8
-        // p' = I * T1 * R1 * R2 * S1 * R3 * T6 * R4 * T7 * S8 * p
-        glutSolidSphere(1.0, 20.0, 20.0); // propeller blade
-        glPopMatrix();
+_____________________________________________
 
 
-Here are the controls for the drone:
+***How to use this program:***
 
-Move Up:                   Up Arrow Key
-Move Down:                 Down Arrow Key
-Rotate ClockWise:          Right Arrow Key
-Rotate CounterClockWise:   Left Arrow Key
-Move Forward:              f Key
-Move Backward:             b Key
-Start Spinning Propellers: s Key
-Stop Spinning Propellers:  s Key
-Print Controls:            h Key
+The program is split into three viewports:
 
-NOTE: These controls are printed to stdout when the 'h' key is pressed while the program is running.
+1) Third-Person Viewport: on the left, which is the view of the city through a third-person view of the drone player. The vertical angle of the camera can be changed by dragging up or down on the window.
+2) First-Person Viewport: on the top right, which shows a view of the city through a first-person view of the drone player on a mounted under-side camera. 
+3) City Map Viewport: on the bottom right, which shows a satellite view of the city as a map with real-time positional icons for the drone player and drone enemy.
 
+
+Drones and Missiles:
+There are two drones in this game, a Drone Player, controlled by the user, and a Drone Enemy, controlled by an AI. Both drones can shoot missiles but only up to 20 each can be in flight at a time, restocking the limit once they are destroyed.
+The missiles have homing capabilities, so they will follow the drones if within a certain distance.
+The Drone Enemy will actively chase and shoot missiles at the player.
+
+Collisions:
+The Drone Player can collide, and will explode, if it comes into contact with the Drone Enemy, the Drone Enemy's missiles, the ground, or any of the buildings, and will reappear at it's spawn point.
+TheDrone Enemy can collide, and will explode, if it comes into contact with the Drone Player, the Drone Player's missiles, the ground, or any of the buildings, and will reappear at it's spawn point.
+Since the Drone Enemy AI moves a lot, it may be difficult to test the drones colliding with each other, so to deactivate the Drone Enemy from moving, press the 'y' key. Press it again to reactivate it.
+The missiles will collide/explode when coming into contact with the drone, world boundaries, buildings, or ground.
+
+
+Buildings & Streets:
+The buildings and streets were created using assignment2 and saved into CityMetaData3.txt.
+They are loaded in and textured when the program begins.
+
+Spotlight and mounted drone camera:
+The spotlight is emitted from the drone in the first-person viewport and the mounted drone camera can be tilted.
+
+Shaders:
+The vertex shader is vShader.glsl and the fragment shader is fShader.glsl.
+The spotlight is calculated in the fragment shader.
+
+Controls:
+The controls are printed to standard output when the 'h' key is pressed.
+
+
+Here is the full list of controls:
+
+-----------------------------------------------------
+Move drone player forward:	w key
+Move drone player backward:	s key
+Move drone player left:		a key
+Move drone player right:	d key
+
+Rotate drone player left:	left arrow key
+Rotate drone player right:	right arrow key
+Move drone player up:		up arrow key
+Move drone player down:		down arrow key
+		
+Change 3rd-person camera angle:	click and drag up/down on first-person view port
+Zoom 3rd-person camera in:	n key
+Zoom 3rd-person camera out:	m key
+
+Activate/Deactivate Enemy AI:	y key
+
+Launch missile:			spacebar
+
+Tilt 1st-person camera down:	k key
+Tilt 1st-person camera up:	i key
+
+Print controls:			h key
+Fullscreen:			f key
+Quit the program:		ESC	
+-----------------------------------------------------
+	
 
 Also, the project folder includes screenshots of what the program should look like when it is running.
-
-

@@ -2,8 +2,6 @@
 //  Missile.cpp
 //  CityBattleDrones
 //
-//  Created by Alessandro Profenna on 2018-11-29.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #include "Missile.hpp"
@@ -64,7 +62,7 @@ void Missile::draw()
         glScalef(scaleFactor/2, scaleFactor/2, scaleFactor);
         glScalef(1, 1, length);
         glRotatef(90, 1, 0, 0);
-        body.draw(bodyTexture, stBodyCoords, true, 2016);
+        body.draw(bodyTexture, stBodyCoords, true, 2015);
         for(int i = 0; i < body.getNumSides(); i++)
         {
             // Triangle polygon to make pyramid head for the missle
@@ -104,7 +102,7 @@ void Missile::draw()
             glScalef(0.3 + animPercent*4, 0.3 + animPercent*5, 0.3 + animPercent*4);
             glScalef(3, 2, 3);
             glDisable(GL_CULL_FACE);
-            smoke.draw(2015, stCoordinates, true);
+            smoke.draw(2014, stCoordinates, true);
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
             glPopMatrix();

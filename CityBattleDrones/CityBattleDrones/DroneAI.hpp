@@ -2,8 +2,6 @@
 //  DroneAI.hpp
 //  CityBattleDrones
 //
-//  Created by Alessandro Profenna on 2018-11-29.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #ifndef DroneAI_hpp
@@ -23,6 +21,7 @@ class DroneAI: public Drone
 {
 public:
     int lastDecisionTime;
+    bool active;
     
     DroneAI();
     DroneAI(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spawnPoint, int maxNumMissiles);

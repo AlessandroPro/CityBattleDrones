@@ -2,8 +2,6 @@
 //  Camera.hpp
 //  CityBuilder
 //
-//  Created by Alessandro Profenna on 2018-11-09.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #ifndef Camera_hpp

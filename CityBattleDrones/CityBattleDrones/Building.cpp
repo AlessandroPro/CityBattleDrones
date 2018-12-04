@@ -2,8 +2,6 @@
 //  Building.cpp
 //  CityBuilder
 //
-//  Created by Alessandro Profenna on 2018-11-05.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #include "Building.hpp"

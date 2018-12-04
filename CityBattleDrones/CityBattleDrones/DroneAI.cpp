@@ -2,20 +2,20 @@
 //  DroneAI.cpp
 //  CityBattleDrones
 //
-//  Created by Alessandro Profenna on 2018-11-29.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #include "DroneAI.hpp"
 
 DroneAI::DroneAI():
     Drone(),
-    lastDecisionTime(0)
+    lastDecisionTime(0),
+    active(true)
     {}
 
 DroneAI::DroneAI(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spawnPoint, int maxNumMissiles):
     Drone(scaleFactor, numArms, numPropBlades, spawnPoint, maxNumMissiles),
-    lastDecisionTime(0)
+    lastDecisionTime(0),
+    active(true)
     {}
 
 void DroneAI::lookAt(Vector3D pos)
@@ -26,7 +26,7 @@ void DroneAI::lookAt(Vector3D pos)
     
     forward.x = lookAtXZ.y;
     forward.z = lookAtXZ.x;
-    rotation.y = RADTODEG * atan2f(lookAtXZ.x, lookAtXZ.y);
+    rotation.y = RADTODEG * atan2f(lookAtXZ.y, lookAtXZ.x);
 }
 
 void DroneAI::moveToward(Vector3D pos)
@@ -111,14 +111,17 @@ void DroneAI::decideToLaunch(Vector3D pos)
 
 void DroneAI::makeDecisions(Vector3D pos)
 {
-    lookAt(pos);
-    
-    int timeSinceLastDecision = glutGet(GLUT_ELAPSED_TIME) - lastDecisionTime;
-    if(timeSinceLastDecision > 300)
+    if(active)
     {
-        moveToward(pos);
-        decideToLaunch(pos);
-        lastDecisionTime = glutGet(GLUT_ELAPSED_TIME);
+        lookAt(pos);
+        
+        int timeSinceLastDecision = glutGet(GLUT_ELAPSED_TIME) - lastDecisionTime;
+        if(timeSinceLastDecision > 300)
+        {
+            moveToward(pos);
+            decideToLaunch(pos);
+            lastDecisionTime = glutGet(GLUT_ELAPSED_TIME);
+        }
     }
 }
 

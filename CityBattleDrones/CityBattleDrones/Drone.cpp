@@ -28,7 +28,7 @@ Drone::Drone():
     createArms(3.0, 0.5);
     for(int i = 0; i < maxNumMissiles; i++)
     {
-        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,0,0), 2014, 2013);
+        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,0,0), 2013, 2012);
         missiles.push_back(missile);
     }
 }
@@ -55,7 +55,7 @@ Drone::Drone(GLfloat scaleFactor, int numArms, int numPropBlades, Vector3D& spaw
     createArms(3.0, 0.5);
     for(int i = 0; i < maxNumMissiles; i++)
     {
-        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,0,0), 2014, 2013);
+        Missile missile(scaleFactor*2, scaleFactor*4, position, forward, Vector3D(0,0,0), 2013, 2012);
         missiles.push_back(missile);
     }
 }
@@ -216,7 +216,7 @@ void Drone::drawCockpit()
         glScalef(0.3 + animPercent*4, 0.3 + animPercent*5, 0.3 + animPercent*4);
         glScalef(3, 2, 3);
         glDisable(GL_CULL_FACE);
-        smoke.draw(2015, stCoordinates, true);
+        smoke.draw(2014, stCoordinates, true);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glPopMatrix();

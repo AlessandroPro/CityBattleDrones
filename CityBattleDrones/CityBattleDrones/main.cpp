@@ -14,7 +14,6 @@
 #endif
 #include "Vector3D.hpp"
 #include "PrismMesh.hpp"
-#include "TextureUtils.hpp"
 #include "Drone.hpp"
 #include "DroneAI.hpp"
 #include "Camera.hpp"
@@ -29,17 +28,18 @@
 #include "Stb_image.cpp"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-int windowWidth = 900;
-int windowHeight = 500;
+int windowWidth = 1200;
+int windowHeight = 600;
 
-const int groundLength = 36;          // Default ground length 100 meters/unit
-const int groundWidth = 36;           // Default ground height 100 meters/unit
+const int groundLength = 36;          // Default ground length
+const int groundWidth = 36;           // Default ground height
 const int worldSize = 300;            // Size of the world, used for the skybox
 const double tpViewportRatio = 0.7; // Window Width Ratio for the third-person viewport
 
 GLuint program = 0;
 GLint texMapLocation;
-GLint decalModeLocation;
+GLint texModeLocation;
+GLint spotlightModeLocation;
 
 //Boundaries of the city viewport
 static GLdouble cityViewportX;
@@ -54,11 +54,11 @@ static GLdouble fpViewportWidth;
 static GLdouble fpViewportHeight;
 
 //Initialize a drone object
-Vector3D playerSpawnPoint(0.0, 3.0, -3.0);
-Vector3D enemySpawnPoint(0.0, 3.0, 4.0);
+Vector3D playerSpawnPoint(0.0, 4.0, -3.0);
+Vector3D enemySpawnPoint(0.0, 4.0, 4.0);
 // Creates a drone with a scaleFactor of 1.0;
-// with 5 arms and 2 propeller blades per arm;
-// positioned at spawnPoint
+// with 6 arms and 2 propeller blades per arm;
+// positioned at specified spawnPoint
 Drone dronePlayer(0.02, 6, 2, playerSpawnPoint, 20);
 DroneAI droneEnemy(0.02, 6, 2, enemySpawnPoint, 20);
 
@@ -78,7 +78,6 @@ static Polygon deMapIcon;
 
 //Textures
 static std::vector<char const*> texFiles; //array of texture filenames
-//static std::vector<RGBpixmap*> pm;  //array of pointers to pixelmaps for each texture file
 
 // Light properties
 static GLfloat light_position0[] = { worldSize*0.5, worldSize*0.1, -worldSize*0.1, 1.0F };
@@ -93,7 +92,7 @@ static GLfloat block_mat_diffuse[] = { 0.9F, 0.8F, 0.8F, 1.0F };
 static GLfloat block_mat_shininess[] = { 0.8F };
 
 // Ground material properties
-static GLfloat ground_ambient[] = { 0.55F, 0.5F, 0.5F, 1.0F };
+static GLfloat ground_ambient[] = { 0.6F, 0.5F, 0.5F, 1.0F };
 static GLfloat ground_specular[] = { 0.1F, 0.1F, 0.1F, 1.0F };
 static GLfloat ground_diffuse[] = { 0.3F, 0.3F, 0.3F, 1.0F };
 static GLfloat ground_shininess[] = { 0.1F };
@@ -104,14 +103,20 @@ static GLfloat street_specular[] = { 0.15F, 0.1F, 0.1F, 1.0F };
 static GLfloat street_diffuse[] = { 0.4F, 0.3F, 0.3F, 1.0F };
 static GLfloat street_shininess[] = { 0.1F };
 
+// Street Map material properties
+static GLfloat streetMap_ambient[] = { 0.4F, 0.4F, 0.4F, 1.0F };
+static GLfloat streetMap_specular[] = { 0.15F, 0.1F, 0.1F, 1.0F };
+static GLfloat streetMap_diffuse[] = { 0.3F, 0.3F, 0.3F, 1.0F };
+static GLfloat streetMap_shininess[] = { 0.1F };
+
 // Drone Player Map Icon material properties
-static GLfloat dpMap_ambient[] = { 0.1F, 0.1F, 0.9F, 1.0F };
+static GLfloat dpMap_ambient[] = { 0.05F, 0.05F, 1.0F, 1.0F };
 static GLfloat dpMap_specular[] = { 1.0F, 1.0F, 1.0F, 1.0F };
 static GLfloat dpMap_diffuse[] = { 1.0F, 1.0F, 1.0F, 1.0F };
 static GLfloat dpMap_shininess[] = { 0.8F };
 
 // Drone Enemy Map Icon material properties
-static GLfloat deMap_ambient[] = { 0.9F, 0.1F, 0.1F, 1.0F };
+static GLfloat deMap_ambient[] = { 1.0F, 0.05F, 0.05F, 1.0F };
 static GLfloat deMap_specular[] = { 1.0F, 1.0F, 1.0F, 1.0F };
 static GLfloat deMap_diffuse[] = { 1.0F, 1.0F, 1.0F, 1.0F };
 static GLfloat deMap_shininess[] = { 0.8F };
@@ -138,12 +143,12 @@ static Vector2D st13 = Vector2D(0.25, 1);
 static Vector2D st23 = Vector2D(0.5, 1);
 
 // Skybox texture coordinates
-static vector<Vector2D> stSkyTopCoords = {st12, st13, st23, st22};
-static vector<Vector2D> stSkyBottomCoords = {st21, st20, st10, st11};
-static vector<vector<Vector2D>> stSkySideCoords = {{st11, st12, st22, st21},
-                                                   {st01, st02, st12, st11},
-                                                   {st31, st32, st42, st41},
-                                                   {st21, st22, st32, st31}};
+static vector<Vector2D> stSkyTopCoords({st12, st13, st23, st22});
+static vector<Vector2D> stSkyBottomCoords({st21, st20, st10, st11});
+static vector< vector<Vector2D> > stSkySideCoords({{st11, st12, st22, st21},
+                                                {st01, st02, st12, st11},
+                                                {st31, st32, st42, st41},
+                                                {st21, st22, st32, st31}});
 
 
 // Prototypes for functions in this module
@@ -193,7 +198,7 @@ int main(int argc, char **argv)
     glutMotionFunc(mouseMotionHandler);
     glutIdleFunc(display);
 
-    initShader("vShader.glsl", "fShader.glsl");
+    initShader("Shaders/vShader.glsl", "Shaders/fShader.glsl");
     
     // Start event loop, never returns
     glutMainLoop();
@@ -226,30 +231,29 @@ void initOpenGL(int w, int h)
     glCullFace(GL_BACK);
     
     //Load textures
-    texFiles.push_back("cityGround2.bmp");  //2000
+    texFiles.push_back("Textures/cityGround2.bmp");      //2000
     
-    texFiles.push_back("steelGradient.bmp");    //2001
+    texFiles.push_back("Textures/steelGradient.bmp");    //2001
     
-    texFiles.push_back("skybox1.bmp");      //2002
-    texFiles.push_back("skybox2.bmp");      //2003
-    texFiles.push_back("skybox4.bmp");      //2004
+    texFiles.push_back("Textures/skybox1.bmp");          //2002
     
-    texFiles.push_back(("floorTex2.bmp"));    //2005
-    texFiles.push_back("floorTex3.bmp");    //2006
-    texFiles.push_back("floorTex4.bmp");    //2007
-    texFiles.push_back("floorTex5.bmp");    //2008
-    texFiles.push_back("floorTex6.bmp");    //2009
+    texFiles.push_back("Textures/floorTex1.bmp");        //2003
+    texFiles.push_back("Textures/floorTex2.bmp");        //2004
+    texFiles.push_back("Textures/floorTex3.bmp");        //2005
+    texFiles.push_back("Textures/floorTex4.bmp");        //2006
+    texFiles.push_back("Textures/floorTex5.bmp");        //2007
+    texFiles.push_back("Textures/floorTex6.bmp");        //2008
+
+    texFiles.push_back("Textures/roofTex1.bmp");         //2009
+    texFiles.push_back("Textures/roofTex2.bmp");         //2010
+    texFiles.push_back("Textures/roofTex3.bmp");         //2011
+    texFiles.push_back("Textures/redMetal2.bmp");        //2012
     
-    texFiles.push_back("roofTex1.bmp");    //2010
-    texFiles.push_back("roofTex2.bmp");    //2011
-    texFiles.push_back("roofTex3.bmp");    //2012
-    texFiles.push_back("redMetal2.bmp");       //2013
+    texFiles.push_back("Textures/missileTex1.bmp");      //2013
+    texFiles.push_back("Textures/smoke1.png");           //2014
+    texFiles.push_back("Textures/blast.bmp");            //2015
     
-    texFiles.push_back("missileTex1.bmp"); //2014
-    texFiles.push_back("smoke1.png");       //2015
-    texFiles.push_back("blast.bmp");       //2016
-    
-    texFiles.push_back("street.bmp");       //2017
+    texFiles.push_back("Textures/street.bmp");           //2016
     
     loadTextures(texFiles);
     
@@ -263,11 +267,13 @@ void initOpenGL(int w, int h)
     
     fpCamera.setElevation(5);
     
-    vector<Vector3D> verts({Vector3D(-1,0,0),Vector3D(0,0,3),Vector3D(1,0,0)});
+    vector<Vector3D> verts({Vector3D(-0.5,0,-0.75),Vector3D(0,0,0.75),Vector3D(0.5,0,-0.75)});
     dpMapIcon.verts = verts;
     deMapIcon.verts = verts;
     dpMapIcon.calculateNormal();
     deMapIcon.calculateNormal();
+    
+    loadCity(CityMetaDataFile);
 }
 
 
@@ -314,7 +320,7 @@ void display(void)
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
     glUniform1i(texMapLocation, 0);
-    glUniform1i(decalModeLocation, 0);
+    glUniform1i(texModeLocation, 0);
     drawAssets();
     
     glViewport(fpViewportX, fpViewportY, (GLsizei)fpViewportWidth, (GLsizei)fpViewportHeight);
@@ -327,7 +333,9 @@ void display(void)
     gluLookAt(fpCamera.focus.x, fpCamera.focus.y, fpCamera.focus.z, fpCamera.position.x, invertedY, fpCamera.position.z, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
+    glUniform1i(spotlightModeLocation, 1);
     drawAssets();
+    glUniform1i(spotlightModeLocation, 0);
     
     glViewport(cityViewportX, cityViewportY, (GLsizei)cityViewportWidth, (GLsizei)cityViewportHeight);
     glMatrixMode(GL_PROJECTION);
@@ -335,10 +343,10 @@ void display(void)
     gluPerspective(20.0, (GLdouble)(cityViewportWidth/cityViewportWidth), 0.01, 400.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //gluLookAt(-8, 8, 12, groundWidth/2, 5, 0, 0, 1, 0);
     gluLookAt(0.1, 101, 0, 0, 0, 0, 0, 1, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
     
+    glUniform1i(texModeLocation, 2);
     drawMap();
 
     
@@ -349,7 +357,7 @@ void drawAssets()
 {
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    vector<Vector2D> stCoordinates = {Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)};
+    vector<Vector2D> stCoordinates({Vector2D(0,0), Vector2D(0,1), Vector2D(1,1), Vector2D(1,0)});
     
     
     // Set material properties of the streets
@@ -360,18 +368,21 @@ void drawAssets()
     
     for(int i = 0; i < streets.size(); i++)
     {
-        streets[i]->draw(2017);
+        glPushMatrix();
+        glTranslatef(0, 0.001*i, 0);
+        streets[i]->draw(2016);
+        glPopMatrix();
     }
     
     //skybox
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     glDisable(GL_CULL_FACE);
-    glUniform1i(decalModeLocation, 1);
+    glUniform1i(texModeLocation, 1);
     glPushMatrix();
     glTranslatef(0, 0, 0);
     skybox.draw(2002, stSkySideCoords, stSkyTopCoords, stSkyBottomCoords);
     glPopMatrix();
-    glUniform1i(decalModeLocation, 0);
+    glUniform1i(texModeLocation, 0);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -384,8 +395,7 @@ void drawAssets()
     
     for(int i = 0; i < buildings.size(); i++)
     {
-        buildings[i]->draw(2005 + buildingTextures[i], stCoordinates, true, 2010 + roofTextures[i]);
-        //buildings[i]->draw(3000, stCoordinates, true, 3000);
+        buildings[i]->draw(2003 + buildingTextures[i], stCoordinates, true, 2009 + roofTextures[i]);
     }
     
     // Set material properties of the ground
@@ -403,14 +413,12 @@ void drawAssets()
 
 void drawMap()
 {
-    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    
     
     // Set material properties of the streets
-    glMaterialfv(GL_FRONT, GL_AMBIENT, street_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, street_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, street_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, street_shininess);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, streetMap_ambient);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, streetMap_specular);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, streetMap_diffuse);
+    glMaterialfv(GL_FRONT, GL_SHININESS, streetMap_shininess);
     
     for(int i = 0; i < streets.size(); i++)
     {
@@ -426,7 +434,6 @@ void drawMap()
     for(int i = 0; i < buildings.size(); i++)
     {
         buildings[i]->draw();
-        //buildings[i]->draw(3000, stCoordinates, true, 3000);
     }
     
     // Set material properties of the ground
@@ -471,14 +478,14 @@ void reshape(int w, int h)
     windowHeight = h;
     float padding = 5;
     
-    //Boundaries of the spline viewport
+    //Boundaries of the city viewport
     cityViewportX  = windowWidth*tpViewportRatio + padding;
     cityViewportY =  0;
     cityViewportWidth = windowWidth-cityViewportX;
     cityViewportHeight = windowHeight*0.5 - padding/2.0;
     
     
-    //Boundaries of the base viewport
+    //Boundaries of the first-person viewport
     fpViewportX  = windowWidth*tpViewportRatio + padding;
     fpViewportY =  cityViewportHeight + padding;
     fpViewportWidth = windowWidth-fpViewportX;
@@ -511,8 +518,8 @@ void keyboard(unsigned char key, int x, int y)
         case 'h':
             printControls();
             break;
-        case 'x':
-            droneEnemy.destroy();
+        case 'y':
+            droneEnemy.active = !droneEnemy.active;
             break;
         case ' ':
             dronePlayer.launchMissile();
@@ -532,13 +539,13 @@ void keyboard(unsigned char key, int x, int y)
             tpCamera.controlActions[2] = true;
             break;
         }
-        case 'i':
+        case 'k':
         {
             fpCamera.setElevationChangeRate(1);
             fpCamera.controlActions[1] = true;
             break;
         }
-        case 'k':
+        case 'i':
         {
             fpCamera.setElevationChangeRate(-1);
             fpCamera.controlActions[1] = true;
@@ -552,10 +559,10 @@ void keyboardUp(unsigned char key, int x, int y)
 {
     switch (key)
     {
-        case 'i':
+        case 'k':
             fpCamera.controlActions[1] = false;
             break;
-        case 'k':
+        case 'i':
             fpCamera.controlActions[1] = false;
             break;
         case 'w':
@@ -570,11 +577,6 @@ void keyboardUp(unsigned char key, int x, int y)
         case 'd':
             dronePlayer.setAction(6, false);
             break;
-        case 'v':
-        {
-            loadCity(CityMetaDataFile);
-            break;
-        }
         case 'n':
             tpCamera.controlActions[2] = false;
             break;
@@ -608,19 +610,15 @@ void functionKeysUp(int key, int x, int y)
 {
     if (key == GLUT_KEY_DOWN)
     {
-        //dronePlayer.changeElevation(-0.5);
         dronePlayer.setAction(1, false);
     }
     else if (key == GLUT_KEY_UP){
-        //dronePlayer.changeElevation(0.5);
         dronePlayer.setAction(0, false);
     }
     else if (key == GLUT_KEY_LEFT){
-        //dronePlayer.changeDirection(5.0);
         dronePlayer.setAction(4, false);
     }
     else if (key == GLUT_KEY_RIGHT){
-        //dronePlayer.changeDirection(-5.0);
         dronePlayer.setAction(5, false);
     }
     glutPostRedisplay();   // Trigger a window redisplay
@@ -629,7 +627,6 @@ void functionKeysUp(int key, int x, int y)
 
 Vector3D ScreenToWorld(int x, int y)
 {
-    // you will need to finish this if you use the mouse
     return Vector3D(0, 0, 0);
 }
 
@@ -678,15 +675,24 @@ void mouseMotionHandler(int xMouse, int yMouse)
 void printControls()
 {
     string controls = "\nHere are the controls for the dronePlayer:\n\n";
-    controls += "Move Up:                   Up Arrow Key\n";
-    controls += "Move Down:                 Down Arrow Key\n";
-    controls += "Rotate ClockWise:          Right Arrow Key\n";
-    controls += "Rotate CounterClockWise:   Left Arrow Key\n";
-    controls += "Move Forward:              f Key\n";
-    controls += "Move Backward:             b Key\n";
-    controls += "Start Spinning Propellers: s Key\n";
-    controls += "Stop Spinning Propellers:  s Key\n";
-    controls += "Print Controls:            h Key\n";
+    controls += "Move drone player forward:         w key\n";
+    controls += "Move drone player backward:        s key\n";
+    controls += "Move drone player left:            a key\n";
+    controls += "Move drone player right:           d key\n\n";
+    controls += "Rotate drone player left:          left arrow key\n";
+    controls += "Rotate drone player right:         right arrow key\n";
+    controls += "Move drone player up:              up arrow key\n";
+    controls += "Move drone player down:            down arrow key\n\n";
+    controls += "Change 3rd-person camera angle:    click and drag up/down on first-person view port\n";
+    controls += "Zoom 3rd-person camera in:         n key\n";
+    controls += "Zoom 3rd-person camera out:        m key\n\n";
+    controls += "Activate/Deactivate Enemy AI:      y key\n\n";
+    controls += "Launch missile:                    spacebar\n\n";
+    controls += "Tilt 1st-person camera down:       k key\n";
+    controls += "Tilt 1st-person camera up:         i key\n\n";
+    controls += "Print controls:                    h key\n";
+    controls += "Fullscreen:                        f key\n";
+    controls += "Quit the program:                  ESC\n";
     std::cout << controls;
 };
 
@@ -745,7 +751,7 @@ void loadCity(string filename)
         for (auto& bld : loadedBuildings)
         {
             buildings.push_back(bld);
-            int randIndex = rand() % 5;
+            int randIndex = rand() % 6;
             buildingTextures.push_back(randIndex);
             randIndex = rand() % 3;
             roofTextures.push_back(randIndex);
@@ -872,7 +878,7 @@ void handleCollisions()
                 float distanceToPlayer = Vector3D::subtract(emPos, pPos).getLength();
                 if(distanceToPlayer < 0.1)
                 {
-                    //dronePlayer.destroy();
+                    dronePlayer.destroy();
                     droneEnemy.missiles[j].blowUp();
                 }
             }
@@ -1001,7 +1007,8 @@ static void initShader(const GLchar* vShaderFile, const GLchar* fShaderFile)
     /* set up uniform parameter */
     
     texMapLocation = glGetUniformLocation(program, "texMap");
-    decalModeLocation = glGetUniformLocation(program, "decalMode");
+    texModeLocation = glGetUniformLocation(program, "texMode");
+    spotlightModeLocation = glGetUniformLocation(program, "spotlightMode");
 }
 
 

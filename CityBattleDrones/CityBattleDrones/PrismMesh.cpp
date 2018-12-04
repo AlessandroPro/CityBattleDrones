@@ -2,8 +2,6 @@
 //  PrismMesh.cpp
 //  CityBuilder
 //
-//  Created by Alessandro Profenna on 2018-11-01.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #include "PrismMesh.hpp"
@@ -108,7 +106,7 @@ void PrismMesh::draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex,
 // Each prism side quad is mapped differently based on their respective st coords in stSideCoords
 // The texture for the top of the prism is mapped based on the st coords in stTopCoords
 // The texture for the Tottom of the prism is mapped based on the st coords in stBottomCoords
-void PrismMesh::draw(int texID, vector<vector<Vector2D>> stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords)
+void PrismMesh::draw(int texID, vector< vector<Vector2D> > stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords)
 {
     glPushMatrix();
     glTranslatef(position.x, position.y, position.z);

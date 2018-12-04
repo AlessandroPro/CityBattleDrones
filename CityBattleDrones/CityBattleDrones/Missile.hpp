@@ -2,8 +2,6 @@
 //  Missile.hpp
 //  CityBattleDrones
 //
-//  Created by Alessandro Profenna on 2018-11-29.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #ifndef Missile_hpp

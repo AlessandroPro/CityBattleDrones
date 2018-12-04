@@ -2,8 +2,6 @@
 //  Vector3D.cpp
 //  CityBuilder
 //
-//  Created by Alessandro Profenna on 2018-11-01.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #include "Vector3D.hpp"

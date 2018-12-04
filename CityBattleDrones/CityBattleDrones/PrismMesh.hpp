@@ -2,8 +2,6 @@
 //  PrismMesh.hpp
 //  CityBuilder
 //
-//  Created by Alessandro Profenna on 2018-11-01.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #ifndef PrismMesh_hpp
@@ -41,7 +39,7 @@ public:
     PrismMesh(int numEdges, float height, float rotY, float posX, float posZ, Vector3D scale);
     void draw();
     void draw(int quadTexID, vector<Vector2D> stQuadCoords, bool baseTex, int baseTexID);
-    void draw(int textID, vector<vector<Vector2D>> stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords);
+    void draw(int textID, vector< vector<Vector2D> > stSideCoords, vector<Vector2D> stTopCoords, vector<Vector2D> stBottomCoords);
     void build();
     void changeNumSides(int changeNum);
     void rotateY(float deltaY);

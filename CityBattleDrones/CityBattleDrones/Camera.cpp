@@ -2,8 +2,6 @@
 //  Camera.cpp
 //  CityBuilder
 //
-//  Created by Alessandro Profenna on 2018-11-09.
-//  Copyright © 2018 Alessandro Profenna. All rights reserved.
 //
 
 #include "Camera.hpp"
@@ -11,7 +9,7 @@
 
 Camera::Camera():
     azimuth(0),
-    elevation(25),
+    elevation(18),
     zoomDistance(DEFAULT_ZOOM),
     clickX(0),
     clickY(0),
