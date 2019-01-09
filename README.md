@@ -17,6 +17,7 @@ Therefore this assignment should be compiled, run, and marked on a Mac. If the T
 
 _____________________________________________
 
+<img width="1440" alt="screenshot1" src="https://user-images.githubusercontent.com/15040875/50874427-fbf78880-1391-11e9-8206-c2646fe9dcf3.png">
 
 Project Structure:
 
