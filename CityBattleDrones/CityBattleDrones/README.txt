@@ -1,8 +1,8 @@
 README
 
 ASSIGNMENT COMPLETED AS GROUP OF 2:
-Alessandro Profenna 500564824
-Tolaz Hewa 500590503
+Alessandro Profenna 
+Tolaz Hewa 
 
 CPS511 - Assignment 3
 City Battle Drones
