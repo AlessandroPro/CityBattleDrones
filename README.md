@@ -1,6 +1,8 @@
 # CityBattleDrones
 An OpenGL C++ program that depicts an urban city with texture-mapped buildings and the ability to control a drone that can battle with a AI-controlled drone.
 
+<img width="1440" alt="screenshot1" src="https://user-images.githubusercontent.com/15040875/50874427-fbf78880-1391-11e9-8206-c2646fe9dcf3.png">
+
 This program was developed on a Mac using Xcode in C++.
 There are two ways to compile and run this program on a Mac:
 
@@ -13,8 +15,6 @@ NOTE: There are deprecation compiler warnings because of GLUT, but these can be 
 NOTE: Although there is code in the makefile for compiling on Windows, it has not been tested.
 
 _____________________________________________
-
-<img width="1440" alt="screenshot1" src="https://user-images.githubusercontent.com/15040875/50874427-fbf78880-1391-11e9-8206-c2646fe9dcf3.png">
 
 ### **Project Structure:**
 
@@ -156,4 +156,12 @@ Quit the program |		ESC
 -----------------------------------------------------
 	
 
-Also, the project folder includes screenshots of what the program should look like when it is running.
+Additional Screenshots:
+
+<img width="1415" alt="screenshot2" src="https://user-images.githubusercontent.com/15040875/50875789-ec7b3e00-1397-11e9-8b30-3b71a5c5af4f.png">
+
+<img width="1413" alt="screenshot3" src="https://user-images.githubusercontent.com/15040875/50875794-f1d88880-1397-11e9-9df1-9dcea0cc3d25.png">
+
+<img width="1410" alt="screenshot4" src="https://user-images.githubusercontent.com/15040875/50875795-f604a600-1397-11e9-9569-3b2effacf91a.png">
+
+<img width="1411" alt="screenshot5" src="https://user-images.githubusercontent.com/15040875/50875801-fdc44a80-1397-11e9-8786-bd7c35e36f33.png">
